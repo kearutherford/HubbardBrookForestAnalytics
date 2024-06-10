@@ -1,0 +1,8 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "HubbardBrookForestAnalytics, version 1.0.0",
+  author   = c(person("Kea Rutherford"), person("John Battles")),
+  organization  = "Battles Lab: Forest Ecology and Ecosystem Dynamics, University of California, Berkeley",
+  year = 2024,
+  url = "https://github.com/kearutherford/HubbardBrookForestAnalytics"
+)

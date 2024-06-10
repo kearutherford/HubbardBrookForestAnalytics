@@ -64,11 +64,11 @@ ValidateOptions <- function(data_type_val, results_val) {
 
 ################################################################################
 ################################################################################
-# ValidateNSVB function
+# ValidateExternal function
 ################################################################################
 ################################################################################
 
-ValidateNSVB <- function(ext_data_val) {
+ValidateExternal <- function(ext_data_val) {
   
   # coerce tibble inputs into data.frame
   data_val <- as.data.frame(ext_data_val)
@@ -159,24 +159,24 @@ ValidateNSVB <- function(ext_data_val) {
   
   
   #########################################################
-  # check that site and plot are as expected
+  # Check that time, site and plot are as expected
   #########################################################
   
   if ('TRUE' %in% is.na(data_val$time)) {
-    stop('There are missing time names in the provided dataframe.')
+    stop('There are missing values in the time column in the provided dataframe.')
   }
   
   if ('TRUE' %in% is.na(data_val$site)) {
-    stop('There are missing site names in the provided dataframe.')
+    stop('There are missing values in the site column in the provided dataframe.')
   }
   
   if ('TRUE' %in% is.na(data_val$plot)) {
-    stop('There are missing plot names in the provided dataframe.')
+    stop('There are missing values in the plot column in the provided dataframe.')
   }
   
   
   ##########################################################
-  # check that expansion factor is as expected
+  # Check that expansion factor is as expected
   ##########################################################
   
   # Check for NA ---------------------------------------------------------------
@@ -185,7 +185,7 @@ ValidateNSVB <- function(ext_data_val) {
          'For plots with no trees, put 0 for the exp_factor.')
   }
   
-  # Check for negative ef ------------------------------------------------------{
+  # Check for negative ef ------------------------------------------------------
   if (min(data_val$exp_factor) < 0) {
     stop('There are negative expansion factors in the provided dataframe. All expansion factors must be >= 0.')
   }
@@ -205,7 +205,7 @@ ValidateNSVB <- function(ext_data_val) {
       if(n > 1) {
           
         stop('There are plots with a recorded expansion factor of 0, but with more than one row.\n',
-             'Plots with no trees should be represented by a single row with site and plot filled in as appropriate and an exp_factor of 0.')
+             'Plots with no trees should be represented by a single row with time, site and plot filled in as appropriate and an exp_factor of 0.')
           
       }
         
@@ -213,14 +213,13 @@ ValidateNSVB <- function(ext_data_val) {
       
   }
   
-  plots_wo_trees <- subset(data_val, exp_factor == 0,
-                           select = c(status, decay_class, species, dbh_cm, ht_cm))
+  plots_wo_trees <- subset(data_val, exp_factor == 0, select = c(status, decay_class, species, dbh_cm, ht_cm))
   
   if('FALSE' %in% is.na(plots_wo_trees)) {
     
-    stop('There are plots with a recorded expansion factor of 0, but with non-NA status, decay_class, species, dbh_cm and/or ht_cm.\n',
-         'Plots with no trees should be represented by a single row with site and plot filled in as appropriate, an exp_factor of 0,\n',
-         'and NA status, decay_class, species, dbh_cm and ht_cm.')
+    stop('There are plots with a recorded expansion factor of 0, but with non-NA status, decay_class, species and/or dbh_cm.\n',
+         'Plots with no trees should be represented by a single row with time, site and plot filled in as appropriate, an exp_factor of 0,\n',
+         'and NA status, decay_class, species and dbh_cm.')
     
   }
   
@@ -245,8 +244,9 @@ ValidateNSVB <- function(ext_data_val) {
   if ('TRUE' %in% is.na(plots_w_trees$status)) {
     
     warning('There are missing status codes in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA status.\n',
-            'Trees with NA status codes will be assumed to be alive (status = 1). Consider investigating these trees.\n',
+            'Trees with NA status codes will be assumed to be live and assigned status = 1. Consider investigating these trees.\n',
             ' \n')
+    
   }
   
   
@@ -255,17 +255,15 @@ ValidateNSVB <- function(ext_data_val) {
   ###########################################################
   
   # Check for unrecognized decay codes -----------------------------------------
-  if(!all(is.element(data_val$decay_class,
-                     c("0","1","2","3","4","5",NA)))) {
+  if(!all(is.element(data_val$decay_class, c("0","1","2","3","4","5",NA)))) {
     
-    unrecognized_decay <- sort(paste0(unique(data_val[!is.element(data_val$decay_class,
-                                                                  c("0","1","2","3","4","5",NA)), "decay_class"]),
-                                      sep = " "))
+    unrecognized_decay <- sort(paste0(unique(data_val[!is.element(data_val$decay_class, 
+                               c("0","1","2","3","4","5",NA)), "decay_class"]), sep = " "))
     
     stop('decay_class must be 0 through 5!\n',
          'Unrecognized decay class codes: ', unrecognized_decay)
+    
   }
-  
   
   # Check that status and decay_class match ------------------------------------
   dead_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "0")
@@ -276,7 +274,7 @@ ValidateNSVB <- function(ext_data_val) {
   if (nrow(dead_miss) > 0) {
     
     warning('There are dead trees with NA and/or 0 decay class codes.\n',
-            'These trees will be assigned a decay class of 3.\n',
+            'These trees will be assigned a decay class of 4.\n',
             'Consider investigating these trees with mismatched status/decay class.\n',
             ' \n')
     
@@ -286,7 +284,7 @@ ValidateNSVB <- function(ext_data_val) {
     
     warning('There are live trees with 1-5 decay class codes.\n',
             'Live trees should have decay class codes of NA or 0.\n',
-            'These trees will still be considered live in the biomass/carbon calculations.\n',
+            'These trees will still be considered live in the biomass calculations.\n',
             'But you should consider investigating these trees with mismatched status/decay class.\n',
             ' \n')
     
@@ -307,14 +305,16 @@ ValidateNSVB <- function(ext_data_val) {
       
     stop('Not all species codes were recognized!\n',
          'Unrecognized codes: ', unrecognized_sp)
+  
   }
   
   # Check for NA ---------------------------------------------------------------
   if ('TRUE' %in% is.na(plots_w_trees$species)) {
     
     warning('There are missing species codes in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA species.\n',
-            'Trees with NA species codes will be assigned unknown tree. Consider investigating these trees.\n',
+            'Trees with NA species codes will be assigned unknown tree, UNKN. Consider investigating these trees.\n',
             ' \n')
+  
   }
   
   
@@ -322,17 +322,35 @@ ValidateNSVB <- function(ext_data_val) {
   # Check DBH
   ###########################################################
   
+  # Check for NA ---------------------------------------------------------------
   if ('TRUE' %in% is.na(plots_w_trees$dbh_cm)) {
     
-    warning('There are missing DBH values in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA dbh.\n',
+    warning('There are missing DBH values in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA DBH.\n',
             'Trees with NA DBH will have NA biomass estimates. Consider investigating these trees.\n',
             ' \n')
+  
   }
   
-  # assign missing status Live
-  # assign missing decay
-  # assign missing species UNTR 
+  # Check for negative DBH -----------------------------------------------------
+  if (min(data_val$dbh_cm, na.rm = TRUE) < 0) {
+    
+    stop('There are negative DBH values in the provided dataframe. All DBH values must be >= 0.')
+  
+  }
+  
+  
+  ###########################################################
+  # Format output df 
+  ###########################################################
+  
+  data_val$status <- ifelse(is.na(data_val$status), "1", data_val$status)
+  data_val$decay_class <- ifelse(data_val$status == "0" & is.na(data_val$decay_class), "4", data_val$decay_class)
+  data_val$decay_class <- ifelse(data_val$status == "0" & data_val$decay_class == "0", "4", data_val$decay_class)
+  data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
+  
+  return_data <- subset(data_val, select = -unique_id)
+  
+  return(return_data)
   
 }
-
 

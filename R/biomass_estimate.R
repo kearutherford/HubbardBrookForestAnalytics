@@ -6,7 +6,11 @@ PredictBiomass <- function(data) {
   sp_set_1.1 <- subset(data, species %in% sp_w_eqs) # species that we fit our own equations for
   sp_set_2.1 <- subset(data, !(species %in% sp_w_eqs)) # species that we use NSVB equations for 
   
-  # species set 1 --------------------------------------------------------------
+  
+  ##############################################################################
+  # species set 1 (we fit our own equations)
+  ##############################################################################
+  
   # add a column for trees that will have NA biomass estimates 
   sp_set_1.1$calc_bio <- "Y"
   sp_set_1.1$calc_bio <- ifelse(is.na(sp_set_1.1$dbh_cm), "N", sp_set_1.1$calc_bio)
@@ -62,8 +66,12 @@ PredictBiomass <- function(data) {
   
   # create clean output df 
   set_1_output <- subset(sp_set_1.3, select = c(time, site, plot, exp_factor, status, decay_class, species, dbh_cm, ht_cm, total_ag_kg, foliage_kg, calc_bio))
+
   
-  # species set 2 --------------------------------------------------------------
+  ##############################################################################
+  # species set 1 (we use NSVB equations)
+  ##############################################################################
+  
   # preserve original columns 
   sp_set_2.1$status_og <- sp_set_2.1$status
   sp_set_2.1$decay_class_og <- sp_set_2.1$decay_class
@@ -83,7 +91,7 @@ PredictBiomass <- function(data) {
   sp_set_2.1$cull <- 0
   
   # run NSVB function from BFA 
-  sp_set_2.2 <- BiomassNSVB(data = sp_set_2.1, sp_codes = "4letter", input_units = "metric", output_units = "metric", results = "by_tree")$dataframe
+  sp_set_2.2 <- suppressWarnings(BiomassNSVB(data = sp_set_2.1, sp_codes = "4letter", input_units = "metric", output_units = "metric", results = "by_tree")$dataframe)
   
   # reassign original columns
   sp_set_2.1$status <- sp_set_2.1$status_og
@@ -93,8 +101,13 @@ PredictBiomass <- function(data) {
   # create clean output df 
   set_2_output <- subset(sp_set_2.2, select = c(time, site, plot, exp_factor, status, decay_class, species, dbh_cm, ht_cm, total_ag_kg, foliage_kg, calc_bio))
   
-  # combine species set 1 and 2 ------------------------------------------------
+  
+  ##############################################################################
+  # combine species sets 1 and 2
+  ##############################################################################
+  
   return_df <- rbind(set_1_output, set_2_output)
+  
   return(return_df)
   
 }
