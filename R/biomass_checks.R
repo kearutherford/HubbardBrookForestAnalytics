@@ -5,7 +5,20 @@
 ################################################################################
 ################################################################################
 
-Biomass <- function(data_type = "internal", external_data, results = "by_plot") {
+#' @title HBEFBiomass
+#'
+#' @description
+#' Describe... 
+#'
+#' @param data_type describe... 
+#' @param external_data describe...
+#' @param results describe...
+#'
+#' @return describe... 
+#'
+#' @export
+
+HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plot") {
   
   # check that options are set appropriately 
   ValidateOptions(data_type_val = data_type, results_val = results)
