@@ -19,7 +19,7 @@ SumByPlot <- function(data) {
     
     for(s in site_ids) {
     
-      all_plots <- subset(data, site == s)
+      all_plots <- subset(all_sites, site == s)
       plot_ids <- unique(all_plots$plot)
     
       for(p in plot_ids) {
