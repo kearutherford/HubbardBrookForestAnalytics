@@ -34,18 +34,24 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
   
   }
   
+  # predict height
+  step2 <- PredictHeight(data = step1)
+  
   # calculate biomass
-  step2 <- PredictBiomass(data = step1)
+  step3 <- PredictBiomass(data = step2)
+  
+  # discount biomass
+  step4 <- DiscountBiomass(data = step3)
   
   # compile to the plot level, if desired
   if(results == "by_tree") {
 
-    return(step2)
+    return(step4)
     
   } else {
     
-    step3 <- SumBy(sum_data = step2, sum_by = results)
-    return(step3)
+    step5 <- SumByPlot(data = step4)
+    return(step5)
     
   }
   
@@ -111,8 +117,8 @@ ValidateExternal <- function(ext_data_val) {
     stop('Input data is missing the necessary "status" column.')
   }
   
-  if(!("decay_class" %in% colnames(data_val))) {
-    stop('Input data is missing the necessary "decay_class" column.')
+  if(!("vigor_class" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "vigor_class" column.')
   }
   
   if(!("species" %in% colnames(data_val))) {
@@ -149,9 +155,9 @@ ValidateExternal <- function(ext_data_val) {
          'You have input a variable of class: ', class(data_val$status))
   }
   
-  if(!is.character(data_val$decay_class)) {
-    stop('"decay_class" must be a character variable.\n',
-         'You have input a variable of class: ', class(data_val$decay_class))
+  if(!is.character(data_val$vigor_class)) {
+    stop('"vigor_class" must be a character variable.\n',
+         'You have input a variable of class: ', class(data_val$vigor_class))
   }
   
   if(!is.character(data_val$species)) {
@@ -226,13 +232,13 @@ ValidateExternal <- function(ext_data_val) {
       
   }
   
-  plots_wo_trees <- subset(data_val, exp_factor == 0, select = c(status, decay_class, species, dbh_cm, ht_cm))
+  plots_wo_trees <- subset(data_val, exp_factor == 0, select = c(status, vigor_class, species, dbh_cm, ht_cm))
   
   if('FALSE' %in% is.na(plots_wo_trees)) {
     
-    stop('There are plots with a recorded expansion factor of 0, but with non-NA status, decay_class, species and/or dbh_cm.\n',
+    stop('There are plots with a recorded expansion factor of 0, but with non-NA status, vigor_class, species and/or dbh_cm.\n',
          'Plots with no trees should be represented by a single row with time, site and plot filled in as appropriate, an exp_factor of 0,\n',
-         'and NA status, decay_class, species and dbh_cm.')
+         'and NA status, vigor_class, species and dbh_cm.')
     
   }
   
@@ -264,41 +270,59 @@ ValidateExternal <- function(ext_data_val) {
   
   
   ###########################################################
-  # Check that decay class is as expected
+  # Check that vigor class is as expected
   ###########################################################
   
-  # Check for unrecognized decay codes -----------------------------------------
-  if(!all(is.element(data_val$decay_class, c("0","1","2","3","4","5",NA)))) {
+  # Check for unrecognized vigor codes -----------------------------------------
+  if(!all(is.element(data_val$vigor_class, c("0","1","2","3","4","5","6",NA)))) {
     
-    unrecognized_decay <- sort(paste0(unique(data_val[!is.element(data_val$decay_class, 
-                               c("0","1","2","3","4","5",NA)), "decay_class"]), sep = " "))
+    unrecognized_vigor <- sort(paste0(unique(data_val[!is.element(data_val$vigor_class, 
+                               c("0","1","2","3","4","5","6",NA)), "vigor_class"]), sep = " "))
     
-    stop('decay_class must be 0 through 5!\n',
-         'Unrecognized decay class codes: ', unrecognized_decay)
+    stop('vigor_class must be 0 through 6!\n',
+         'Unrecognized vigor class codes: ', unrecognized_vigor)
     
   }
   
-  # Check that status and decay_class match ------------------------------------
-  dead_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "0")
-  dead_miss <- subset(dead_trees, is.na(dead_trees$decay_class) | dead_trees$decay_class == "0")
-  live_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "1")
-  live_miss <- subset(live_trees, !is.na(live_trees$decay_class) & live_trees$decay_class != "0")
+  # Check for vigor code 6 -----------------------------------------------------
+  if ("6" %in% data_val$vigor_class) {
+    
+    warning('There are trees with a vigor class of 6, which means that the tree is down.\n',
+            'Trees with vigor class 6 will have NA biomass estimates.\n',
+            ' \n')
+    
+  }
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(plots_w_trees$vigor_class)) {
+    
+    warning('There are missing vigor class codes in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA vigor class.\n',
+            'Dead trees with NA vigor class will be assigned a vigor class of 4.\n',
+            ' \n')
+    
+  }
+  
+  # Check that status and vigor_class match ------------------------------------
+  dead_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "0" & !is.na(data_val$vigor_class))
+  dead_miss <- subset(dead_trees, dead_trees$vigor_class == "0" | dead_trees$vigor_class == "1" | dead_trees$vigor_class == "2" | dead_trees$vigor_class == "3")
+  live_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "1" & !is.na(data_val$vigor_class))
+  live_miss <- subset(live_trees, live_trees$vigor_class == "4" | live_trees$vigor_class == "5" | live_trees$vigor_class == "6")
   
   if (nrow(dead_miss) > 0) {
     
-    warning('There are dead trees with NA and/or 0 decay class codes.\n',
-            'These trees will be assigned a decay class of 4.\n',
-            'Consider investigating these trees with mismatched status/decay class.\n',
+    warning('There are dead trees with 0-3 vigor class codes.\n',
+            'These trees will be assigned a vigor class of 4.\n',
+            'Consider investigating these trees with mismatched status/vigor class.\n',
             ' \n')
     
   }
   
   if (nrow(live_miss) > 0) {
     
-    warning('There are live trees with 1-5 decay class codes.\n',
-            'Live trees should have decay class codes of NA or 0.\n',
+    warning('There are live trees with 4-6 vigor class codes.\n',
+            'Live trees should have vigor class codes of 0-3.\n',
             'These trees will still be considered live in the biomass calculations.\n',
-            'But you should consider investigating these trees with mismatched status/decay class.\n',
+            'But you should consider investigating these trees with mismatched status/vigor class.\n',
             ' \n')
     
   }
@@ -357,8 +381,8 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   data_val$status <- ifelse(is.na(data_val$status), "1", data_val$status)
-  data_val$decay_class <- ifelse(data_val$status == "0" & is.na(data_val$decay_class), "4", data_val$decay_class)
-  data_val$decay_class <- ifelse(data_val$status == "0" & data_val$decay_class == "0", "4", data_val$decay_class)
+  data_val$vigor_class <- ifelse(data_val$status == "0" & is.na(data_val$vigor_class), "4", data_val$vigor_class, 
+                                 ifelse(data_val$status == "0" & data_val$vigor_class %in% c("0", "1", "2", "3"), "4", data_val$vigor_class))
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
   
   return_data <- subset(data_val, select = -unique_id)

@@ -1,39 +1,13 @@
 
-################################################################################
-################################################################################
-# SumBy function
-################################################################################
-################################################################################
-
-SumBy <- function(sum_data, sum_by) {
+SumByPlot <- function(data) {
   
   # convert to Mg/ha
-  sum_data$total_ag <- (sum_data$total_ag_kg/1000)*(1/sum_data$exp_factor)
-  sum_data$foliage <- (sum_data$foliage_kg/1000)*(1/sum_data$exp_factor)
-  
-  # route to the appropriate summary function
-  if(sum_by == "by_plot") {
-    
-    output <- ByPlot(sum_data)
-    
-  }
-  
-  return(output)
-  
-}
-
-
-################################################################################
-################################################################################
-# ByPlot function
-################################################################################
-################################################################################
-
-ByPlot <- function(data) {
+  data$above <- (data$above_kg/1000)*data$exp_factor
+  data$leaf <- (data$leaf_kg/1000)*data$exp_factor
   
   # create empty dataframe to fill
   fill_df <- data.frame(matrix(nrow = 0, ncol = 5))
-  colnames(fill_df) <- c("time", "site", "plot", "total_ag_Mg_ha", "foliage_Mg_ha")
+  colnames(fill_df) <- c("time", "site", "plot", "above_Mg_ha", "leaf_Mg_ha")
   
   # loop through each time, site and plot
   times <- unique(data$time)
@@ -52,7 +26,7 @@ ByPlot <- function(data) {
       
         all_trees <- subset(all_plots, plot == p)
         sum_stems <- sum(all_trees$exp_factor)
-        alert <- all(all_trees$calc_bio == "N")
+        alert <- all(is.na(all_trees$above) & is.na(all_trees$leaf))
         
         fill_df[nrow(fill_df) + 1, ] <- NA
         n <- nrow(fill_df)
@@ -74,8 +48,8 @@ ByPlot <- function(data) {
           # there are trees in the plot, and not all had NA biomass estimates
         } else if (sum_stems > 0 & alert == "FALSE") {
           
-          fill_df$total_ag_Mg_ha[n] <- round(sum(all_trees$total_ag, na.rm = TRUE),5)
-          fill_df$foliage_Mg_ha[n] <- round(sum(all_trees$foliage, na.rm = TRUE),5)
+          fill_df$above_Mg_ha[n] <- round(sum(all_trees$above, na.rm = TRUE),5)
+          fill_df$leaf_Mg_ha[n] <- round(sum(all_trees$leaf, na.rm = TRUE),5)
           
         }
       
