@@ -1,4 +1,5 @@
 
+
 ################################################################################
 ################################################################################
 # Top-level function
@@ -50,7 +51,7 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
     
   } else {
     
-    step5 <- SumByPlot(data = step4)
+    step5 <- SumByPlot(data = step4, data_type_input = data_type)
     return(step5)
     
   }
@@ -97,12 +98,12 @@ ValidateExternal <- function(ext_data_val) {
   # Check that all columns are in the provided dataframe
   ###########################################################
   
-  if(!("time" %in% colnames(data_val))) {
-    stop('Input data is missing the necessary "time" column.')
+  if(!("year" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "year" column.')
   }
   
-  if(!("site" %in% colnames(data_val))) {
-    stop('Input data is missing the necessary "site" column.')
+  if(!("watershed" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "watershed" column.')
   }
   
   if(!("plot" %in% colnames(data_val))) {
@@ -117,8 +118,8 @@ ValidateExternal <- function(ext_data_val) {
     stop('Input data is missing the necessary "status" column.')
   }
   
-  if(!("vigor_class" %in% colnames(data_val))) {
-    stop('Input data is missing the necessary "vigor_class" column.')
+  if(!("vigor" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "vigor" column.')
   }
   
   if(!("species" %in% colnames(data_val))) {
@@ -129,20 +130,24 @@ ValidateExternal <- function(ext_data_val) {
     stop('Input data is missing the necessary "dbh_cm" column.')
   }
   
+  if(!("elev_m" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "elev_m" column.')
+  }
+  
   
   ###########################################################
   # Check that column classes are as expected
   ###########################################################
   
   # Categorical variables ------------------------------------------------------
-  if(!is.character(data_val$time)) {
-    stop('"time" must be a character variable.\n',
-         'You have input a variable of class: ', class(data_val$time))
+  if(!is.character(data_val$year)) {
+    stop('"year" must be a character variable.\n',
+         'You have input a variable of class: ', class(data_val$year))
   }
   
-  if(!is.character(data_val$site)) {
-    stop('"site" must be a character variable.\n',
-         'You have input a variable of class: ', class(data_val$site))
+  if(!is.character(data_val$watershed)) {
+    stop('"watershed" must be a character variable.\n',
+         'You have input a variable of class: ', class(data_val$watershed))
   }
   
   if(!is.character(data_val$plot)) {
@@ -155,9 +160,9 @@ ValidateExternal <- function(ext_data_val) {
          'You have input a variable of class: ', class(data_val$status))
   }
   
-  if(!is.character(data_val$vigor_class)) {
-    stop('"vigor_class" must be a character variable.\n',
-         'You have input a variable of class: ', class(data_val$vigor_class))
+  if(!is.character(data_val$vigor)) {
+    stop('"vigor" must be a character variable.\n',
+         'You have input a variable of class: ', class(data_val$vigor))
   }
   
   if(!is.character(data_val$species)) {
@@ -176,17 +181,22 @@ ValidateExternal <- function(ext_data_val) {
          'You have input a variable of class: ', class(data_val$dbh_cm))
   }
   
-  
-  #########################################################
-  # Check that time, site and plot are as expected
-  #########################################################
-  
-  if ('TRUE' %in% is.na(data_val$time)) {
-    stop('There are missing values in the time column in the provided dataframe.')
+  if(!is.numeric(data_val$dbh_cm)) {
+    stop('"elev_m" must be a numerical variable.\n',
+         'You have input a variable of class: ', class(data_val$elev_m))
   }
   
-  if ('TRUE' %in% is.na(data_val$site)) {
-    stop('There are missing values in the site column in the provided dataframe.')
+  
+  #########################################################
+  # Check that year, watershed and plot are as expected
+  #########################################################
+  
+  if ('TRUE' %in% is.na(data_val$year)) {
+    stop('There are missing values in the year column in the provided dataframe.')
+  }
+  
+  if ('TRUE' %in% is.na(data_val$watershed)) {
+    stop('There are missing values in the watershed column in the provided dataframe.')
   }
   
   if ('TRUE' %in% is.na(data_val$plot)) {
@@ -209,50 +219,17 @@ ValidateExternal <- function(ext_data_val) {
     stop('There are negative expansion factors in the provided dataframe. All expansion factors must be >= 0.')
   }
   
-  # Check for proper use of 0 ef -----------------------------------------------
-  data_val$unique_id <- paste0(data_val$time, data_val$site, data_val$plot)
-  ids <- unique(data_val$unique_id)
-  
-  for(d in ids) {
-      
-    all_trees <- subset(data_val, unique_id == d)
-      
-    if('TRUE' %in% is.element(all_trees$exp_factor, 0)) {
-        
-      n <- nrow(all_trees)
-        
-      if(n > 1) {
-          
-        stop('There are plots with a recorded expansion factor of 0, but with more than one row.\n',
-             'Plots with no trees should be represented by a single row with time, site and plot filled in as appropriate and an exp_factor of 0.')
-          
-      }
-        
-    }
-      
-  }
-  
-  plots_wo_trees <- subset(data_val, exp_factor == 0, select = c(status, vigor_class, species, dbh_cm, ht_cm))
-  
-  if('FALSE' %in% is.na(plots_wo_trees)) {
-    
-    stop('There are plots with a recorded expansion factor of 0, but with non-NA status, vigor_class, species and/or dbh_cm.\n',
-         'Plots with no trees should be represented by a single row with time, site and plot filled in as appropriate, an exp_factor of 0,\n',
-         'and NA status, vigor_class, species and dbh_cm.')
-    
-  }
-  
   
   ###########################################################
   # Check that status is as expected
   ###########################################################
   
   # Check for unrecognized status codes ----------------------------------------
-  if(!all(is.element(data_val$status, c("0","1", NA)))) {
+  if(!all(is.element(data_val$status, c("Dead","Live", NA)))) {
     
-    unrecognized_status <- sort(paste0(unique(data_val[!is.element(data_val$status, c("0", "1", NA)), "status"]), sep = " "))
+    unrecognized_status <- sort(paste0(unique(data_val[!is.element(data_val$status, c("Dead", "Live", NA)), "status"]), sep = " "))
     
-    stop('Status must be 0 or 1!\n',
+    stop('Status must be Dead or Live!\n',
          'Unrecognized status codes: ', unrecognized_status)
   
   }
@@ -263,7 +240,7 @@ ValidateExternal <- function(ext_data_val) {
   if ('TRUE' %in% is.na(plots_w_trees$status)) {
     
     warning('There are missing status codes in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA status.\n',
-            'Trees with NA status codes will be assumed to be live and assigned status = 1. Consider investigating these trees.\n',
+            'Trees with NA status codes will be assumed to be live. Consider investigating these trees.\n',
             ' \n')
     
   }
@@ -274,18 +251,18 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   # Check for unrecognized vigor codes -----------------------------------------
-  if(!all(is.element(data_val$vigor_class, c("0","1","2","3","4","5","6",NA)))) {
+  if(!all(is.element(data_val$vigor, c("0","1","2","3","4","5","6",NA)))) {
     
-    unrecognized_vigor <- sort(paste0(unique(data_val[!is.element(data_val$vigor_class, 
-                               c("0","1","2","3","4","5","6",NA)), "vigor_class"]), sep = " "))
+    unrecognized_vigor <- sort(paste0(unique(data_val[!is.element(data_val$vigor, 
+                               c("0","1","2","3","4","5","6",NA)), "vigor"]), sep = " "))
     
-    stop('vigor_class must be 0 through 6!\n',
+    stop('vigor must be 0 through 6!\n',
          'Unrecognized vigor class codes: ', unrecognized_vigor)
     
   }
   
   # Check for vigor code 6 -----------------------------------------------------
-  if ("6" %in% data_val$vigor_class) {
+  if ("6" %in% data_val$vigor) {
     
     warning('There are trees with a vigor class of 6, which means that the tree is down.\n',
             'Trees with vigor class 6 will have NA biomass estimates.\n',
@@ -294,7 +271,7 @@ ValidateExternal <- function(ext_data_val) {
   }
   
   # Check for NA ---------------------------------------------------------------
-  if ('TRUE' %in% is.na(plots_w_trees$vigor_class)) {
+  if ('TRUE' %in% is.na(plots_w_trees$vigor)) {
     
     warning('There are missing vigor class codes in the provided dataframe - outside of plots with exp_factor of 0, signifying plots with no trees, which should have NA vigor class.\n',
             'Dead trees with NA vigor class will be assigned a vigor class of 4.\n',
@@ -302,11 +279,11 @@ ValidateExternal <- function(ext_data_val) {
     
   }
   
-  # Check that status and vigor_class match ------------------------------------
-  dead_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "0" & !is.na(data_val$vigor_class))
-  dead_miss <- subset(dead_trees, dead_trees$vigor_class == "0" | dead_trees$vigor_class == "1" | dead_trees$vigor_class == "2" | dead_trees$vigor_class == "3")
-  live_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "1" & !is.na(data_val$vigor_class))
-  live_miss <- subset(live_trees, live_trees$vigor_class == "4" | live_trees$vigor_class == "5" | live_trees$vigor_class == "6")
+  # Check that status and vigor match ------------------------------------
+  dead_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "Dead" & !is.na(data_val$vigor))
+  dead_miss <- subset(dead_trees, dead_trees$vigor == "0" | dead_trees$vigor == "1" | dead_trees$vigor == "2" | dead_trees$vigor == "3")
+  live_trees <- subset(data_val, !is.na(data_val$status) & data_val$status == "Live" & !is.na(data_val$vigor))
+  live_miss <- subset(live_trees, live_trees$vigor == "4" | live_trees$vigor == "5" | live_trees$vigor == "6")
   
   if (nrow(dead_miss) > 0) {
     
@@ -377,12 +354,36 @@ ValidateExternal <- function(ext_data_val) {
   
   
   ###########################################################
+  # Check elevation 
+  ###########################################################
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(plots_w_trees$elev_m)) {
+    
+    warning('There are missing elevations in the provided dataframe.\n',
+            'Trees in plots with NA elevation will have NA biomass estimates. Consider investigating these plots.\n',
+            ' \n')
+    
+  }
+  
+  # Check for negative DBH -----------------------------------------------------
+  if (min(data_val$elev_m, na.rm = TRUE) < 0) {
+    
+    stop('There are negative elevations in the provided dataframe. All elevation values must be >= 0.')
+    
+  }
+  
+  
+  ###########################################################
   # Format output df 
   ###########################################################
   
-  data_val$status <- ifelse(is.na(data_val$status), "1", data_val$status)
-  data_val$vigor_class <- ifelse(data_val$status == "0" & is.na(data_val$vigor_class), "4", data_val$vigor_class, 
-                                 ifelse(data_val$status == "0" & data_val$vigor_class %in% c("0", "1", "2", "3"), "4", data_val$vigor_class))
+  data$sample_class <- ifelse(data$dbh_cm < 10, "sapling", "tree")
+  data$elev_mid <- ifelse(data$elev_m >= 630 & data$elev_m <= 700, 1, 0)
+  data$elev_high <- ifelse(data$elev_m > 700, 1, 0)
+  data_val$status <- ifelse(is.na(data_val$status), "Live", data_val$status)
+  data_val$vigor <- ifelse(data_val$status == "Dead" & is.na(data_val$vigor), "4", 
+                           ifelse(data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
   
   return_data <- subset(data_val, select = -unique_id)
