@@ -2,7 +2,7 @@
 PredictHeight <- function(data) {
   
   # add necessary variables to dataframe 
-  data$calc_ht <- ifelse(is.na(data$dbh_cm) | is.na(data$elev_m), "N", "Y")
+  data$calc_ht <- ifelse(is.na(data$dbh_cm) | is.na(data$elev_m) | data$vigor == "6", "N", "Y")
   
   # merge coefficient dataframe
   data2 <- merge(data, hgt_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
@@ -20,7 +20,6 @@ PredictHeight <- function(data) {
   data2$ht_cm <- data2$ht_m*100
   
   return_df <- subset(data2, select = c(watershed, year, plot, exp_factor, forest_type, elev_m, elev_band, status, vigor, canopy, bbd, species, sample_class, dbh_cm, ht_cm))
-  
   return(return_df)
   
 }
