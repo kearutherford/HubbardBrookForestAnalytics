@@ -47,7 +47,7 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
     
   } else {
     
-    step5 <- SumByPlot(data = step4, data_type_input = data_type)
+    step5 <- SumBy(data = step4, sum_by = results)
     return(step5)
     
   }
@@ -357,13 +357,12 @@ ValidateExternal <- function(ext_data_val) {
   data$elev_high <- ifelse(data$elev_m > 700, 1, 0)
   
   # fill in certain missing/incorrect values
+  data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
   data_val$status <- ifelse(species != "NONE" & is.na(data_val$status), "Live", data_val$status)
   data_val$vigor <- ifelse(data_val$status == "Dead" & is.na(data_val$vigor), "4", 
                            ifelse(data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
-  data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
   
-  return_data <- subset(data_val, select = -unique_id)
-  return(return_data)
+  return(data_val)
   
 }
 

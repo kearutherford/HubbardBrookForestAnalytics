@@ -1,8 +1,8 @@
 
 PredictHeight <- function(data) {
   
-  # add necessary variables to dataframe 
-  data$calc_ht <- ifelse(is.na(data$dbh_cm) | is.na(data$elev_m) | data$vigor == "6", "N", "Y")
+  # add variable to dataframe 
+  data$calc_ht <- ifelse(is.na(data$dbh_cm) | is.na(data$elev_m), "N", "Y")
   
   # merge coefficient dataframe
   data2 <- merge(data, hgt_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
@@ -18,20 +18,24 @@ PredictHeight <- function(data) {
   
   # convert ht from m to cm
   data2$ht_cm <- data2$ht_m*100
-  
-  return_df <- subset(data2, select = c(watershed, year, plot, exp_factor, forest_type, elev_m, elev_band, status, vigor, canopy, bbd, species, sample_class, dbh_cm, ht_cm))
+
+  return_df <- subset(data2, select = -c(calc_ht, spp_hgt, a, b, c, d, e, eqn, ht_m, elev_mid, elev_high))
   return(return_df)
   
 }
 
 
 PredictBiomass <- function(data) {
-
+  
+  # add variable to dataframe 
+  # NA ht_cm has NA dbh_cm and NA elev_m baked in 
+  data$calc_bio <- ifelse(is.na(data$ht_cm), "N", "Y")
+  
   # split data 
   sp_w_eqs <- c("FAGR", "POGR", "ABBA", "FRNI", "TSCA", "BECO", "BEPA", "PRPE", "POTR", "ACRU", "PIRU", "ACSA", "ACPE", "FRAM", "BEAL")
   sp_set_1.1 <- subset(data, species %in% sp_w_eqs) # species that we fit our own equations for
-  sp_set_2.1 <- subset(data, !(species %in% sp_w_eqs) & species != "NONE" & species != "VIAL") # species that we use NSVB equations for 
-  sp_set_3.1 <- subset(data, species == "NONE" | species == "VIAL") # plots without trees 
+  sp_set_2.1 <- subset(data, !(species %in% sp_w_eqs) & species != "NONE") # species that we use NSVB equations for 
+  sp_set_3.1 <- subset(data, species == "NONE") # plots without trees 
   
   
   ##############################################################################
@@ -58,8 +62,8 @@ PredictBiomass <- function(data) {
   
   # add ABOVEg coefficients, and estimate ABOVEg biomass
   sp_set_1.2 <- merge(sp_set_1.1, above_coefs, by = "sp_size_abv", all.x = TRUE, all.y = FALSE)
-  sp_set_1.2$above_g <- ifelse(!is.na(sp_set_1.2$dbh_cm) & sp_set_1.2$model_abv == "M1", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv)*(sp_set_1.2$ht_cm^sp_set_1.2$b3_abv), NA)
-  sp_set_1.2$above_g <- ifelse(!is.na(sp_set_1.2$dbh_cm) & sp_set_1.2$model_abv == "M2", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv), sp_set_1.2$above_g)
+  sp_set_1.2$above_g <- ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$model_abv == "M1", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv)*(sp_set_1.2$ht_cm^sp_set_1.2$b3_abv), NA)
+  sp_set_1.2$above_g <- ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$model_abv == "M2", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv), sp_set_1.2$above_g)
   sp_set_1.2$above_kg <- sp_set_1.2$above_g*0.001 # convert from g to kg
   
   # add a species/size class column for LEAFg
@@ -79,12 +83,12 @@ PredictBiomass <- function(data) {
   
   # add LEAFg coefficients, and estimate LEAFg biomass
   sp_set_1.3 <- merge(sp_set_1.2, leaf_coefs, by = "sp_size_lf", all.x = TRUE, all.y = FALSE)
-  sp_set_1.3$leaf_g <- ifelse(!is.na(sp_set_1.3$dbh_cm) & sp_set_1.3$model_lf == "M1", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf)*(sp_set_1.3$ht_cm^sp_set_1.3$b3_lf), NA)
-  sp_set_1.3$leaf_g <- ifelse(!is.na(sp_set_1.3$dbh_cm) & sp_set_1.3$model_lf == "M2", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf), sp_set_1.3$leaf_g)
+  sp_set_1.3$leaf_g <- ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$model_lf == "M1", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf)*(sp_set_1.3$ht_cm^sp_set_1.3$b3_lf), NA)
+  sp_set_1.3$leaf_g <- ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$model_lf == "M2", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf), sp_set_1.3$leaf_g)
   sp_set_1.3$leaf_kg <- sp_set_1.3$leaf_g*0.001 # convert from g to kg
   
   # create clean output df 
-  set_1_output <- subset(sp_set_1.3, select = c(watershed, year, plot, exp_factor, forest_type, elev_m, elev_band, status, vigor, canopy, bbd, species, sample_class, dbh_cm, ht_cm, above_kg, leaf_kg))
+  set_1_output <- subset(sp_set_1.3, select = -c(sp_size_abv, model_abv, b1_abv, b2_abv, b3_abv, sp_size_lf, model_lf, b1_lf, b2_lf, b3_lf, calc_bio, above_g, leaf_g))
 
   
   ##############################################################################
@@ -118,7 +122,12 @@ PredictBiomass <- function(data) {
   sp_set_2.2$above_kg <- sp_set_2.2$total_ag_kg + sp_set_2.2$foliage_kg
   
   # create clean output df
-  set_2_output <- subset(sp_set_2.2, select = c(watershed, year, plot, exp_factor, forest_type, elev_m, elev_band, status_og, vigor, canopy, bbd, species_og, sample_class, dbh_cm, ht_cm, above_kg, foliage_kg))
+  set_2_output <- subset(sp_set_2.2, select = -c(division, province, site, status, decay_class, species, dbh, ht1, ht2, crown_ratio, top, cull, 
+                                                 total_wood_kg, total_bark_kg, total_branch_kg, total_ag_kg, merch_wood_kg, merch_bark_kg, merch_total_kg,
+                                                 merch_top_kg, stump_wood_kg, stump_bark_kg, stump_total_kg,
+                                                 total_wood_c, total_bark_c, total_branch_c, total_ag_c, merch_wood_c, merch_bark_c, merch_total_c,
+                                                 merch_top_c, stump_wood_c, stump_bark_c, stump_total_c, foliage_c, calc_bio))
+  
   names(set_2_output)[names(set_2_output) == "status_og"] <- "status"
   names(set_2_output)[names(set_2_output) == "species_og"] <- "species"
   names(set_2_output)[names(set_2_output) == "foliage_kg"] <- "leaf_kg"
@@ -128,14 +137,15 @@ PredictBiomass <- function(data) {
   # species set 3 (plots without trees)
   ##############################################################################
   
+  # biomass is NA, not 0, at the tree level
+  # biomass becomes 0 at the plot level 
   sp_set_3.1$above_kg <- NA
   sp_set_3.1$leaf_kg <- NA
-  
   set_3_output <- sp_set_3.1
   
   
   ##############################################################################
-  # combine species sets 1 and 2
+  # combine species sets 1, 2, and 3
   ##############################################################################
   
   return_df <- rbind(set_1_output, set_2_output, set_3_output)
@@ -146,11 +156,13 @@ PredictBiomass <- function(data) {
 
 DiscountBiomass <- function(data) {
   
-  # discount above biomass 
-  data$above_kg <- ifelse(data$vigor == "4", data$above_kg*0.7283, ifelse(data$vigor == "5", data$above_kg*0.5683, ifelse(data$vigor == "6", NA, data$above_kg)))
+  # discount above biomass for dead trees 
+  data$above_kg <- ifelse(data$status == "Dead" & data$vigor == "4", data$above_kg*0.7283, 
+                          ifelse(data$status == "Dead" & data$vigor == "5", data$above_kg*0.5683, 
+                          ifelse(data$status == "Dead" & data$vigor == "6", NA, data$above_kg)))
   
-  # discount leaf biomass
-  data$leaf_kg <- ifelse(data$status == "0", 0, data$leaf_kg)
+  # discount leaf biomass for dead trees
+  data$leaf_kg <- ifelse(data$status == "Dead" & data$vigor != "6", 0, ifelse(data$status == "Dead" & data$vigor == "6", NA, data$leaf_kg))
   
   return(data)
   
