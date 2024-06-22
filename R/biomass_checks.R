@@ -1,5 +1,4 @@
 
-
 ################################################################################
 ################################################################################
 # Top-level function
@@ -26,7 +25,7 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
   
   # check and prep input data, if external 
   if(data_type == "internal") {
-    step1 <- internal_hbef_data
+    step1 <- subset(internal_hbef_data, species != "VIAL")
   } else {
     step1 <- ValidateExternal(ext_data_val = external_data)
   }
@@ -69,7 +68,7 @@ ValidateOptions <- function(data_type_val, results_val) {
     stop('The "data_type" parameter must be set to either "internal" or "external".')
   }
   
-  if(results_val == "by_tree" || results_val == "by_plot") {
+  if(results_val == "by_tree" || results_val == "by_plot" || results_val == "by_size") {
     # do nothing
   } else {
     stop('The "results" parameter must be set to "by_tree" or "by_plot".')
@@ -226,7 +225,7 @@ ValidateExternal <- function(ext_data_val) {
             ' \n')
   }
   
-  # Check for negative DBH -----------------------------------------------------
+  # Check for negative elev ----------------------------------------------------
   if (min(data_val$elev_m, na.rm = TRUE) < 0) {
     stop('There are negative elevations in the provided dataframe. All elevation values must be >= 0.')
   }
@@ -284,21 +283,14 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   # Check for unrecognized vigor codes -----------------------------------------
-  if(!all(is.element(data_val$vigor, c("0","1","2","3","4","5","6",NA)))) {
+  if(!all(is.element(data_val$vigor, c("0","1","2","3","4","5",NA)))) {
     
     unrecognized_vigor <- sort(paste0(unique(data_val[!is.element(data_val$vigor, 
-                               c("0","1","2","3","4","5","6",NA)), "vigor"]), sep = " "))
+                               c("0","1","2","3","4","5",NA)), "vigor"]), sep = " "))
     
-    stop('vigor must be 0 through 6!\n',
+    stop('vigor must be 0 through 5!\n',
          'Unrecognized vigor codes: ', unrecognized_vigor)
     
-  }
-  
-  # Check for vigor code 6 -----------------------------------------------------
-  if ("6" %in% data_val$vigor) {
-    warning('There are trees with a vigor class of 6, which means that the tree is down.\n',
-            'Trees with vigor class 6 will have NA biomass estimates.\n',
-            ' \n')
   }
   
   # Check for NA ---------------------------------------------------------------
@@ -322,7 +314,7 @@ ValidateExternal <- function(ext_data_val) {
   }
   
   if (nrow(live_miss) > 0) {
-    warning('There are live trees with 4-6 vigor class codes.\n',
+    warning('There are live trees with 4-5 vigor class codes.\n',
             'Live trees should have vigor class codes of 0-3.\n',
             'These trees will still be considered live in the biomass calculations.\n',
             'But you should consider investigating these trees with mismatched status/vigor class.\n',
