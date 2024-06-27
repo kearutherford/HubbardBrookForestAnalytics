@@ -1,5 +1,5 @@
 
-#HBEFBiomass(data_type = "internal", results = "by_plot")
+#test <- HBEFBiomass(data_type = "internal", results = "by_tree")
 
 ################################################################################
 ################################################################################
@@ -232,6 +232,57 @@ ValidateExternal <- function(ext_data_val) {
     stop('There are negative elevations in the provided dataframe. All elevation values must be >= 0.')
   }
   
+  # Check for matching elevations within a plot --------------------------------
+  data_val$water_year_plot <- paste(data_val$watershed, data_val$year, data_val$plot, sep = "_")
+  unq_ids <- unique(data_val$water_year_plot)
+  elev_check_vec <- c()
+  
+  for(u in unq_ids) {
+    
+    all_trees <- subset(data_val, water_year_plot == u)
+    
+    if(length(unique(all_trees$elev_m)) != 1) {
+      elev_check_vec <- c(elev_check_vec, u)
+    }
+    
+  }
+  
+  if(length(elev_check_vec) > 0) {
+    
+    stop('Each watershed:year:plot should have the same elevation recorded.\n',
+         'The following watershed:year:plot combinations have multiple elev_m values: ', elev_check_vec)
+    
+  }
+  
+  
+  ###########################################################
+  # Check forest type (if in dataframe)
+  ###########################################################
+  
+  # Check for matching forest type within a plot -------------------------------
+  if("forest_type" %in% colnames(data_val)) {
+    
+    for_check_vec <- c()
+    
+    for(u in unq_ids) {
+      
+      all_trees <- subset(data_val, water_year_plot == u)
+      
+      if(length(unique(all_trees$forest_type)) != 1) {
+        for_check_vec <- c(for_check_vec, u)
+      }
+      
+    }
+    
+    if(length(for_check_vec) > 0) {
+      
+      stop('Each watershed:year:plot should have the same forest type recorded.\n',
+           'The following watershed:year:plot combinations have multiple forest types recorded: ', for_check_vec)
+      
+    }
+    
+  }
+  
   
   ###########################################################
   # Check that species codes are as expected
@@ -255,6 +306,37 @@ ValidateExternal <- function(ext_data_val) {
     warning('There are missing species codes in the provided dataframe. Trees with NA species codes will be assigned unknown tree, UNKN. Consider investigating these trees.\n\n')
   }
   
+  # Check for proper use of NONE species ---------------------------------------
+  for(u in unq_ids) {
+      
+    all_trees <- subset(data_val, water_year_plot == u)
+      
+    if('TRUE' %in% is.element(all_trees$species, "NONE")) {
+        
+      n <- nrow(all_trees)
+        
+      if(n > 1) {
+          
+        stop('There are plots with a recorded species code of NONE, but with more than one row.\n',
+             'Plots with no trees or saplings should be represented by a single row with watershed, year, plot, exp_factor, elev_m, and forest_type filled in as appropriate and a species code of NONE.')
+          
+      }
+        
+    }
+      
+  }
+  
+  plots_wo_trees <- subset(data_val, species == "NONE",
+                           select = c(status, vigor, dbh_cm))
+  
+  if('FALSE' %in% is.na(plots_wo_trees)) {
+    
+    stop('There are plots with a recorded species code of NONE, but with non-NA status, vigor and/or dbh_cm.\n',
+         'Plots with no trees or saplings should be represented by a single row with watershed, year, plot, exp_factor, elev_m, and forest_type filled in as appropriate, a species code of NONE,\n',
+         'and NA status, vigor and/or dbh_cm.')
+    
+  }
+  
   
   ###########################################################
   # Check that status is as expected
@@ -274,7 +356,7 @@ ValidateExternal <- function(ext_data_val) {
   plots_w_trees <- subset(data_val, species != "NONE")
   
   if ('TRUE' %in% is.na(plots_w_trees$status)) {
-    warning('There are missing status codes in the provided dataframe - outside of plots with species = NONE, signifying plots with no trees, which should have NA status.\n',
+    warning('There are missing status codes in the provided dataframe - outside of plots with species = NONE, signifying plots with no trees or saplings, which should have NA status.\n',
             'Trees with NA status codes will be assumed to be live. Consider investigating these trees.\n',
             ' \n')
   }
@@ -298,7 +380,7 @@ ValidateExternal <- function(ext_data_val) {
   # Check for NA ---------------------------------------------------------------
   if ('TRUE' %in% is.na(plots_w_trees$vigor)) {
     warning('There are missing vigor codes in the provided dataframe - outside of plots with species = NONE, signifying plots with no trees, which should have NA vigor.\n',
-            'Dead trees with NA vigor will be assigned a vigor class of 4.\n',
+            'Dead trees with NA vigor will be assigned a vigor of 4.\n',
             ' \n')
   }
   
@@ -309,17 +391,17 @@ ValidateExternal <- function(ext_data_val) {
   live_miss <- subset(live_trees, live_trees$vigor == "4" | live_trees$vigor == "5" | live_trees$vigor == "6")
   
   if (nrow(dead_miss) > 0) {
-    warning('There are dead trees with 0-3 vigor class codes.\n',
-            'These trees will be assigned a vigor class of 4.\n',
-            'Consider investigating these trees with mismatched status/vigor class.\n',
+    warning('There are dead trees with 0-3 vigor codes.\n',
+            'These trees will be assigned a vigor of 4.\n',
+            'Consider investigating these trees with mismatched status/vigor.\n',
             ' \n')
   }
   
   if (nrow(live_miss) > 0) {
-    warning('There are live trees with 4-5 vigor class codes.\n',
-            'Live trees should have vigor class codes of 0-3.\n',
+    warning('There are live trees with 4-5 vigor codes.\n',
+            'Live trees should have vigor codes of 0-3.\n',
             'These trees will still be considered live in the biomass calculations.\n',
-            'But you should consider investigating these trees with mismatched status/vigor class.\n',
+            'But you should consider investigating these trees with mismatched status/vigor.\n',
             ' \n')
   }
   
@@ -336,8 +418,8 @@ ValidateExternal <- function(ext_data_val) {
   }
   
   # Check for negative DBH -----------------------------------------------------
-  if (min(data_val$dbh_cm, na.rm = TRUE) < 0) {
-    stop('There are negative DBH values in the provided dataframe. All DBH values must be >= 0.')
+  if (min(data_val$dbh_cm, na.rm = TRUE) < 2) {
+    stop('There are DBH values < 2 in the provided dataframe. All DBH values must be >= 2 cm.')
   }
   
   
@@ -346,15 +428,18 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   # add necessary columns for future calculations 
-  data$sample_class <- ifelse(data$dbh_cm < 10, "sapling", "tree")
-  data$elev_mid <- ifelse(data$elev_m >= 630 & data$elev_m <= 700, 1, 0)
-  data$elev_high <- ifelse(data$elev_m > 700, 1, 0)
+  data_val$sample_class <- ifelse(!is.na(data_val$dbh_cm) & data_val$dbh_cm < 10, "sapling", "tree")
+  data_val$elev_mid <- ifelse(!is.na(data_val$elev_m) & data_val$elev_m >= 630 & data_val$elev_m <= 700, 1, 0)
+  data_val$elev_high <- ifelse(!is.na(data_val$elev_m) & data_val$elev_m > 700, 1, 0)
   
   # fill in certain missing/incorrect values
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
   data_val$status <- ifelse(species != "NONE" & is.na(data_val$status), "Live", data_val$status)
-  data_val$vigor <- ifelse(data_val$status == "Dead" & is.na(data_val$vigor), "4", 
-                           ifelse(data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
+  data_val$vigor <- ifelse(species != "NONE" & data_val$status == "Dead" & is.na(data_val$vigor), "4", 
+                           ifelse(species != "NONE" & data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
+  
+  # remove column created only for checks
+  data_val <- subset(data_val, select = -water_year_plot)
   
   return(data_val)
   

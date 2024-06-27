@@ -116,10 +116,8 @@ PredictBiomass <- function(data) {
   # species set 3 (plots without trees)
   ##############################################################################
   
-  # biomass is NA, not 0, at the tree level
-  # biomass becomes 0 at the plot level 
-  sp_set_3.1$above_kg <- NA
-  sp_set_3.1$leaf_kg <- NA
+  sp_set_3.1$above_kg <- 0
+  sp_set_3.1$leaf_kg <- 0
   set_3_output <- subset(sp_set_3.1, select = -calc_bio)
   set_3_output <- subset(set_3_output, select = order(colnames(set_3_output)))
   
