@@ -7,13 +7,9 @@ SumBy <- function(data, sum_by) {
   
   # route to the appropriate summary function
   if(sum_by == "by_plot") {
-    
     output <- ByPlot(sum_data = data)
-    
   } else if(sum_by == "by_size") {
-    
     output <- BySize(sum_data = data)
-    
   } 
   
   return(output)
@@ -36,69 +32,82 @@ ByPlot <- function(sum_data) {
   
   }
   
-  # loop through each year, watershed and plot
-  watershed_ids <- unique(sum_data$watershed)
-  
-  for(w in watershed_ids) {
+  # loop through each watershed, year and plot
+  sum_data$water_year_plot <- paste(sum_data$watershed, sum_data$year, sum_data$plot, sep = "_")
+  unq_ids <- unique(sum_data$water_year_plot)
     
-    all_years <- subset(sum_data, watershed == w)
-    year_ids <- unique(all_years$year)
-    
-    for(y in year_ids) {
-    
-      all_plots <- subset(all_years, year == y)
-      plot_ids <- unique(all_plots$plot)
-    
-      for(p in plot_ids) {
+  for(u in unq_ids) {
       
-        all_trees <- subset(all_plots, plot == p)
+      all_trees <- subset(sum_data, water_year_plot == u)
         
-        fill_df[nrow(fill_df) + 1, ] <- NA
-        n <- nrow(fill_df)
+      fill_df[nrow(fill_df) + 1, ] <- NA
+      n <- nrow(fill_df)
         
-        fill_df$watershed[n] <- w
-        fill_df$year[n] <- y
-        fill_df$plot[n] <- p
-        fill_df$elev_m[n] <- all_trees$elev_m[1]
+      fill_df$watershed[n] <- all_trees$watershed[1]
+      fill_df$year[n] <- all_trees$year[1]
+      fill_df$plot[n] <- all_trees$plot[1]
+      fill_df$elev_m[n] <- all_trees$elev_m[1]
         
-        if("forest_type" %in% colnames(sum_data)) {
-          fill_df$forest_type[n] <- all_trees$forest_type[1]
-        }
-      
-        # if there are no trees in the plot
-        if(all(all_trees$species == "NONE")) {
-          
-          fill_df$above_L_Mg_ha[n] <- 0
-          fill_df$above_D_Mg_ha[n] <- 0
-          fill_df$above_Mg_ha[n] <- 0
-          fill_df$leaf_Mg_ha[n] <- 0
-          
-          # there are trees in the plot
-        } else {
-          
-          live_trees <- subset(all_trees, status == "Live")
-          dead_trees <- subset(all_trees, status == "Dead")
-          
-          fill_df$above_L_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
-                                            ifelse(all(is.na(live_trees$above)), NA, 
-                                            sum(live_trees$above, na.rm = TRUE))),5)
-          
-          fill_df$above_D_Mg_ha[n] <- round(ifelse(nrow(dead_trees) < 1, 0,
-                                            ifelse(all(is.na(dead_trees$above)), NA, 
-                                            sum(dead_trees$above, na.rm = TRUE))),5)
-          
-          fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
-          
-          fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
-                                         ifelse(all(is.na(live_trees$leaf)), NA, 
-                                         sum(live_trees$leaf, na.rm = TRUE))),5)
-          
-        }
-      
+      if("forest_type" %in% colnames(sum_data)) {
+        fill_df$forest_type[n] <- all_trees$forest_type[1]
       }
       
-    }
-    
+      # if there are no trees in the plot
+      if(all(all_trees$species == "NONE")) {
+          
+        fill_df$above_L_Mg_ha[n] <- 0
+        fill_df$above_D_Mg_ha[n] <- 0
+        fill_df$above_Mg_ha[n] <- 0
+        fill_df$leaf_Mg_ha[n] <- 0
+          
+      # there are trees in the plot
+      } else {
+          
+        live_trees <- subset(all_trees, status == "Live")
+        dead_trees <- subset(all_trees, status == "Dead")
+        
+        # live trees 
+        if(nrow(live_trees) == 0) {
+          
+          fill_df$above_L_Mg_ha[n] <- 0
+          fill_df$leaf_Mg_ha[n] <- 0
+          
+        } else {
+          
+          if(all(is.na(live_trees$above))) {
+            fill_df$above_L_Mg_ha[n] <- NA
+          } else {
+            fill_df$above_L_Mg_ha[n] <- round(sum(live_trees$above, na.rm = TRUE),5)
+          }
+          
+          if(all(is.na(live_trees$leaf))) {
+            fill_df$leaf_Mg_ha[n] <- NA
+          } else {
+            fill_df$leaf_Mg_ha[n] <- round(sum(live_trees$leaf, na.rm = TRUE),5)
+          }
+          
+        }
+        
+        # dead trees 
+        if(nrow(dead_trees) == 0) {
+          
+          fill_df$above_D_Mg_ha[n] <- 0
+          
+        } else {
+          
+          if(all(is.na(dead_trees$above))) {
+            fill_df$above_D_Mg_ha[n] <- NA
+          } else {
+            fill_df$above_D_Mg_ha[n] <- round(sum(dead_trees$above, na.rm = TRUE),5)
+          }
+          
+        }
+        
+        # all trees 
+        fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
+          
+      }
+      
   }
   
   return(fill_df)
@@ -121,87 +130,74 @@ BySize <- function(sum_data) {
     
   }
   
-  # loop through each year, watershed, plot, and sampling class
-  watershed_ids <- unique(sum_data$watershed)
+  # loop through each watershed, year, plot, and sampling class
+  sum_data$water_year_plot <- paste(sum_data$watershed, sum_data$year, sum_data$plot, sep = "_")
+  unq_ids <- unique(sum_data$water_year_plot)
   
-  for(w in watershed_ids) {
+  for(u in unq_ids) {
     
-    all_years <- subset(sum_data, watershed == w)
-    year_ids <- unique(all_years$year)
-    
-    for(y in year_ids) {
-      
-      all_plots <- subset(all_years, year == y)
-      plot_ids <- unique(all_plots$plot)
-      
-      for(p in plot_ids) {
+    all_trees <- subset(sum_data, water_year_plot == u)
         
-        all_trees <- subset(all_plots, plot == p)
+    for(s in c("sapling", "tree")) {
         
-        for(c in c("sapling", "tree")) {
+      all_class <- subset(all_trees, sample_class == s)
           
-          all_class <- subset(all_trees, sample_class == c)
+      fill_df[nrow(fill_df) + 1, ] <- NA
+      n <- nrow(fill_df)
+        
+      fill_df$watershed[n] <- all_trees$watershed[1]
+      fill_df$year[n] <- all_trees$year[1]
+      fill_df$plot[n] <- all_trees$plot[1]
+      fill_df$elev_m[n] <- all_trees$elev_m[1] # important this is all_trees
+      fill_df$sample_class[n] <- s
           
-          fill_df[nrow(fill_df) + 1, ] <- NA
-          n <- nrow(fill_df)
+      if("forest_type" %in% colnames(sum_data)) {
+        fill_df$forest_type[n] <- all_trees$forest_type[1] # important this is all_trees
+      }
           
-          fill_df$watershed[n] <- w
-          fill_df$year[n] <- y
-          fill_df$plot[n] <- p
-          fill_df$elev_m[n] <- all_trees$elev_m[1] # important this is all_trees
-          fill_df$sample_class[n] <- c
-          
-          if("forest_type" %in% colnames(sum_data)) {
-            fill_df$forest_type[n] <- all_trees$forest_type[1] # important this is all_trees
-          }
-          
-          if(nrow(all_class) > 0) {
+      if(nrow(all_class) > 0) {
             
-            # if there are no saplings/trees (depending on the specific class) in the plot
-            if(all(all_class$species == "NONE")) {
+        # if there are no saplings/trees (depending on the specific class) in the plot
+        if(all(all_class$species == "NONE")) {
               
-              fill_df$above_L_Mg_ha[n] <- 0
-              fill_df$above_D_Mg_ha[n] <- 0
-              fill_df$above_Mg_ha[n] <- 0
-              fill_df$leaf_Mg_ha[n] <- 0
+            fill_df$above_L_Mg_ha[n] <- 0
+            fill_df$above_D_Mg_ha[n] <- 0
+            fill_df$above_Mg_ha[n] <- 0
+            fill_df$leaf_Mg_ha[n] <- 0
               
-              # there are saplings/trees in the plot
-            } else {
+        # there are saplings/trees in the plot
+        } else {
               
-              live_trees <- subset(all_class, status == "Live")
-              dead_trees <- subset(all_class, status == "Dead")
+          live_trees <- subset(all_class, status == "Live")
+          dead_trees <- subset(all_class, status == "Dead")
               
-              fill_df$above_L_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
-                                                ifelse(all(is.na(live_trees$above)), NA, 
-                                                sum(live_trees$above, na.rm = TRUE))),5)
+          fill_df$above_L_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
+                                            ifelse(all(is.na(live_trees$above)), NA, 
+                                            sum(live_trees$above, na.rm = TRUE))),5)
 
-              fill_df$above_D_Mg_ha[n] <- round(ifelse(nrow(dead_trees) < 1, 0,
-                                                ifelse(all(is.na(dead_trees$above)), NA, 
-                                                sum(dead_trees$above, na.rm = TRUE))),5)
+          fill_df$above_D_Mg_ha[n] <- round(ifelse(nrow(dead_trees) < 1, 0,
+                                            ifelse(all(is.na(dead_trees$above)), NA, 
+                                            sum(dead_trees$above, na.rm = TRUE))),5)
                 
-              fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
+          fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
               
-              fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
-                                             ifelse(all(is.na(live_trees$leaf)), NA, 
-                                             sum(live_trees$leaf, na.rm = TRUE))),5)
+          fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) < 1, 0,
+                                         ifelse(all(is.na(live_trees$leaf)), NA, 
+                                         sum(live_trees$leaf, na.rm = TRUE))),5)
               
-            }
+        }
             
-          } else {
+      } else {
             
             fill_df$above_L_Mg_ha[n] <- 0
             fill_df$above_D_Mg_ha[n] <- 0
             fill_df$above_Mg_ha[n] <- 0
             fill_df$leaf_Mg_ha[n] <- 0
             
-          }
-          
-        }
-        
       }
-      
+          
     }
-    
+        
   }
   
   return(fill_df)

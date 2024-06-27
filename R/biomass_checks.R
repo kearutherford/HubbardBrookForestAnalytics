@@ -1,4 +1,6 @@
 
+#HBEFBiomass(data_type = "internal", results = "by_plot")
+
 ################################################################################
 ################################################################################
 # Top-level function
@@ -71,7 +73,7 @@ ValidateOptions <- function(data_type_val, results_val) {
   if(results_val == "by_tree" || results_val == "by_plot" || results_val == "by_size") {
     # do nothing
   } else {
-    stop('The "results" parameter must be set to "by_tree" or "by_plot".')
+    stop('The "results" parameter must be set to "by_tree", "by_plot" or "by_size".')
   }
   
 }

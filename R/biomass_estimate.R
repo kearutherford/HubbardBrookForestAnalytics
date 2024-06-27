@@ -28,11 +28,11 @@ PredictHeight <- function(data) {
 PredictBiomass <- function(data) {
   
   # add variable to dataframe 
-  # NA ht_cm has NA dbh_cm and NA elev_m baked in 
+  # NA ht_cm has NA dbh_cm and NA elev_m baked in (see function above)
   data$calc_bio <- ifelse(is.na(data$ht_cm), "N", "Y")
   
   # split data 
-  sp_w_eqs <- c("FAGR", "POGR", "ABBA", "FRNI", "TSCA", "BECO", "BEPA", "PRPE", "POTR", "ACRU", "PIRU", "ACSA", "ACPE", "FRAM", "BEAL")
+  sp_w_eqs <- c(unique(above_coefs$species), "PRSP", "BECO")
   sp_set_1.1 <- subset(data, species %in% sp_w_eqs) # species that we fit our own equations for
   sp_set_2.1 <- subset(data, !(species %in% sp_w_eqs) & species != "NONE") # species that we use NSVB equations for 
   sp_set_3.1 <- subset(data, species == "NONE") # plots without trees 
@@ -41,54 +41,29 @@ PredictBiomass <- function(data) {
   ##############################################################################
   # species set 1 (we fit our own equations)
   ##############################################################################
-
-  # add a species/size class column for ABOVEg
-  sp_set_1.1$sp_size_abv <- sp_set_1.1$species
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "PRSP", "PRPE", sp_set_1.1$sp_size_abv) # PRSP uses PRPE eqs
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "ACRU" & sp_set_1.1$dbh_cm < 10, "ACRU_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "ACRU" & sp_set_1.1$dbh_cm >= 10, "ACRU_L", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "ACSA" & sp_set_1.1$dbh_cm < 10, "ACSA_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "ACSA" & sp_set_1.1$dbh_cm >= 10, "ACSA_L", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BEAL" & sp_set_1.1$dbh_cm < 10, "BEAL_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BEAL" & sp_set_1.1$dbh_cm >= 10, "BEAL_L", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BEPA" & sp_set_1.1$dbh_cm < 10, "BEPA_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BEPA" & sp_set_1.1$dbh_cm >= 10, "BEPA_L", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BECO" & sp_set_1.1$dbh_cm < 10, "BEPA_S", sp_set_1.1$sp_size_abv) # BECO uses BEPA eqs.
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "BECO" & sp_set_1.1$dbh_cm >= 10, "BEPA_L", sp_set_1.1$sp_size_abv) # BECO uses BEPA eqs.
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "FAGR" & sp_set_1.1$dbh_cm < 10, "FAGR_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "FAGR" & sp_set_1.1$dbh_cm >= 10, "FAGR_L", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "POTR" & sp_set_1.1$dbh_cm < 10, "POTR_S", sp_set_1.1$sp_size_abv)
-  sp_set_1.1$sp_size_abv <- ifelse(sp_set_1.1$sp_size_abv == "POTR" & sp_set_1.1$dbh_cm >= 10, "POTR_L", sp_set_1.1$sp_size_abv)
+  
+  # preserve original species column
+  names(sp_set_1.1)[names(sp_set_1.1) == "species"] <- "species_og"
+  
+  # add a new species column
+  sp_set_1.1$species <- ifelse(sp_set_1.1$species_og == "PRSP", "PRPE", # PRSP uses PRPE eqs
+                               ifelse(sp_set_1.1$species_og == "BECO", "BEPA", sp_set_1.1$species_og)) # BECO uses BEPA eqs.
   
   # add ABOVEg coefficients, and estimate ABOVEg biomass
-  sp_set_1.2 <- merge(sp_set_1.1, above_coefs, by = "sp_size_abv", all.x = TRUE, all.y = FALSE)
-  sp_set_1.2$above_g <- ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$model_abv == "M1", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv)*(sp_set_1.2$ht_cm^sp_set_1.2$b3_abv), NA)
-  sp_set_1.2$above_g <- ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$model_abv == "M2", sp_set_1.2$b1_abv*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_abv), sp_set_1.2$above_g)
+  sp_set_1.2 <- merge(sp_set_1.1, above_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
+  sp_set_1.2$above_g <- ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$eqn_ag == "M1", sp_set_1.2$b1_ag*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_ag)*(sp_set_1.2$ht_cm^sp_set_1.2$b3_ag), 
+                               ifelse(sp_set_1.2$calc_bio == "Y" & sp_set_1.2$eqn_ag == "M2", sp_set_1.2$b1_ag*(sp_set_1.2$dbh_cm^sp_set_1.2$b2_ag), NA))
   sp_set_1.2$above_kg <- sp_set_1.2$above_g*0.001 # convert from g to kg
   
-  # add a species/size class column for LEAFg
-  sp_set_1.2$sp_size_lf <- sp_set_1.2$species
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "BECO", "BEPA", sp_set_1.2$sp_size_lf) # BECO uses BEPA eqs
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "PRSP", "PRPE", sp_set_1.2$sp_size_lf) # PRSP uses PRPE eqs
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "ACRU" & sp_set_1.2$dbh_cm < 10, "ACRU_S", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "ACRU" & sp_set_1.2$dbh_cm >= 10, "ACRU_L", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "ACSA" & sp_set_1.2$dbh_cm < 10, "ACSA_S", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "ACSA" & sp_set_1.2$dbh_cm >= 10, "ACSA_L", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "BEAL" & sp_set_1.2$dbh_cm < 10, "BEAL_S", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "BEAL" & sp_set_1.2$dbh_cm >= 10, "BEAL_L", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "FAGR" & sp_set_1.2$dbh_cm < 10, "FAGR_S", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "FAGR" & sp_set_1.2$dbh_cm >= 10, "FAGR_L", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "POTR" & sp_set_1.2$dbh_cm < 10, "POTR_S", sp_set_1.2$sp_size_lf)
-  sp_set_1.2$sp_size_lf <- ifelse(sp_set_1.2$sp_size_lf == "POTR" & sp_set_1.2$dbh_cm >= 10, "POTR_L", sp_set_1.2$sp_size_lf)
-  
   # add LEAFg coefficients, and estimate LEAFg biomass
-  sp_set_1.3 <- merge(sp_set_1.2, leaf_coefs, by = "sp_size_lf", all.x = TRUE, all.y = FALSE)
-  sp_set_1.3$leaf_g <- ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$model_lf == "M1", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf)*(sp_set_1.3$ht_cm^sp_set_1.3$b3_lf), NA)
-  sp_set_1.3$leaf_g <- ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$model_lf == "M2", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf), sp_set_1.3$leaf_g)
+  sp_set_1.3 <- merge(sp_set_1.2, leaf_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
+  sp_set_1.3$leaf_g <- ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$eqn_lf == "M1", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf)*(sp_set_1.3$ht_cm^sp_set_1.3$b3_lf),
+                              ifelse(sp_set_1.3$calc_bio == "Y" & sp_set_1.3$eqn_lf == "M2", sp_set_1.3$b1_lf*(sp_set_1.3$dbh_cm^sp_set_1.3$b2_lf), NA))
   sp_set_1.3$leaf_kg <- sp_set_1.3$leaf_g*0.001 # convert from g to kg
   
   # create clean output df 
-  set_1_output <- subset(sp_set_1.3, select = -c(sp_size_abv, model_abv, b1_abv, b2_abv, b3_abv, sp_size_lf, model_lf, b1_lf, b2_lf, b3_lf, calc_bio, above_g, leaf_g))
+  set_1_output <- subset(sp_set_1.3, select = -c(eqn_ag, b1_ag, b2_ag, b3_ag, eqn_lf, b1_lf, b2_lf, b3_lf, calc_bio, above_g, leaf_g, species))
+  names(set_1_output)[names(set_1_output) == "species_og"] <- "species"
   set_1_output <- subset(set_1_output, select = order(colnames(set_1_output)))
   
   
@@ -117,7 +92,7 @@ PredictBiomass <- function(data) {
   sp_set_2.1$cull <- 0
   
   # run NSVB function from BFA 
-  sp_set_2.2 <- BiomassNSVB(data = sp_set_2.1, sp_codes = "4letter", input_units = "metric", output_units = "metric", results = "by_tree")$dataframe
+  sp_set_2.2 <- suppressWarnings(BiomassNSVB(data = sp_set_2.1, sp_codes = "4letter", input_units = "metric", output_units = "metric", results = "by_tree")$dataframe)
   
   # make sure HBEF and BFA NSVB values are cohesive
   # In HBEF data, ABOVEg includes LEAFg. In NSVB workflow, foliage is separate from wood/bark/branch biomass.
