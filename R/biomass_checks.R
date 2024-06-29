@@ -27,7 +27,7 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
   
   # check and prep input data, if external 
   if(data_type == "internal") {
-    step1 <- subset(internal_hbef_data)
+    step1 <- internal_hbef_data
   } else {
     step1 <- ValidateExternal(ext_data_val = external_data)
   }
@@ -43,15 +43,12 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
   
   # compile to the plot level, if desired
   if(results == "by_tree") {
-    
-    return(step4)
-    
+    step5 <- subset(step4, select = -sample_class)
   } else {
-    
     step5 <- SumBy(data = step4, sum_by = results)
-    return(step5)
-    
   }
+  
+  return(step5)
   
 }
 

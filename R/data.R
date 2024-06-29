@@ -3,7 +3,7 @@
 # dataframes used for ValidateOptions and ValidateExternal function tests
 ################################################################################
 
-good_trees <- data.frame(
+good_trees_1 <- data.frame(
   watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
   year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
   plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
@@ -13,6 +13,21 @@ good_trees <- data.frame(
   status = c("Live","Live","Live","Dead","Live","Dead", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
   vigor = as.character(c(1,2,1,4,3,5,1,4,1,5,4,5,4,4,NA)),
   dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+good_trees_2 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  forest_type = c("spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir","spruce-fir",
+                  "northern_hardwood","northern_hardwood","northern_hardwood"), 
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Dead", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,3,5,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA),
+  cbh_m = c(0.3,1.4,1.8,2.2,1.5,1.6,1.4,0.5,0.8,0.2,0.5,3.6,1.5,1.9,NA)
 )
 
 bad_trees_1 <- data.frame(

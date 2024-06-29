@@ -15,15 +15,15 @@ test_that("Invalid settings throw an error", {
 test_that("Properly formatted external dataframes throw no errors, warnings, or messages", {
   
   expect_no_error(HBEFBiomass(data_type = "external", 
-                              external_data = good_trees,
+                              external_data = good_trees_1,
                               results = "by_plot"))
   
   expect_no_warning(HBEFBiomass(data_type = "external", 
-                                external_data = good_trees,
+                                external_data = good_trees_1,
                                 results = "by_plot"))
   
   expect_no_message(HBEFBiomass(data_type = "external", 
-                                external_data = good_trees,
+                                external_data = good_trees_1,
                                 results = "by_plot"))
   
 })
@@ -276,13 +276,77 @@ test_that("DBH handling works", {
 
 test_that("Dataframes have expected column names", {
   
-
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_1,
+                           results = "by_tree"),
+               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg"))
+  
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_2,
+                           results = "by_tree"),
+               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "cbh_m", "forest_type"))
+  
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_1,
+                           results = "by_plot"),
+               c("watershed", "year", "plot", "elev_m", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_2,
+                           results = "by_plot"),
+               c("watershed", "year", "plot", "forest_type", "elev_m", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_1,
+                           results = "by_size"),
+               c("watershed", "year", "plot", "elev_m", "sample_class", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  
+  expect_named(HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_2,
+                           results = "by_size"),
+               c("watershed", "year", "plot", "forest_type", "elev_m", "sample_class", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
   
 })
 
+
 test_that("Final column classes are as expected", {
   
-
+  by_tree_1 <- HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_1,
+                           results = "by_tree")
+  
+  expect_equal(class(by_tree_1$watershed), "character")
+  expect_equal(class(by_tree_1$year), "character")
+  expect_equal(class(by_tree_1$plot), "character")
+  expect_equal(class(by_tree_1$elev_m), "numeric")
+  expect_equal(class(by_tree_1$exp_factor), "numeric")
+  expect_equal(class(by_tree_1$species), "character")
+  expect_equal(class(by_tree_1$status), "character")
+  expect_equal(class(by_tree_1$vigor), "character")
+  expect_equal(class(by_tree_1$dbh_cm), "numeric")
+  expect_equal(class(by_tree_1$ht_cm), "numeric")
+  expect_equal(class(by_tree_1$above_kg), "numeric")
+  expect_equal(class(by_tree_1$leaf_kg), "numeric")
+  
+  by_tree_2 <- HBEFBiomass(data_type = "external", 
+                           external_data = good_trees_2,
+                           results = "by_tree")
+  
+  expect_equal(class(by_tree_2$watershed), "character")
+  expect_equal(class(by_tree_2$year), "character")
+  expect_equal(class(by_tree_2$plot), "character")
+  expect_equal(class(by_tree_2$elev_m), "numeric")
+  expect_equal(class(by_tree_2$exp_factor), "numeric")
+  expect_equal(class(by_tree_2$species), "character")
+  expect_equal(class(by_tree_2$status), "character")
+  expect_equal(class(by_tree_2$vigor), "character")
+  expect_equal(class(by_tree_2$dbh_cm), "numeric")
+  expect_equal(class(by_tree_2$ht_cm), "numeric")
+  expect_equal(class(by_tree_2$above_kg), "numeric")
+  expect_equal(class(by_tree_2$leaf_kg), "numeric")
+  expect_equal(class(by_tree_2$cbh_m), "numeric")
+  expect_equal(class(by_tree_2$forest_type), "character")
+  
   
 })
 
