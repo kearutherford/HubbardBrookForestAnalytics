@@ -27,7 +27,7 @@ HBEFBiomass <- function(data_type = "internal", external_data, results = "by_plo
   
   # check and prep input data, if external 
   if(data_type == "internal") {
-    step1 <- subset(internal_hbef_data, species != "VIAL")
+    step1 <- subset(internal_hbef_data)
   } else {
     step1 <- ValidateExternal(ext_data_val = external_data)
   }
@@ -185,7 +185,7 @@ ValidateExternal <- function(ext_data_val) {
   
   
   #########################################################
-  # Check that year, watershed and plot are as expected
+  # Check that watershed, year and plot are as expected
   #########################################################
   
   if ('TRUE' %in% is.na(data_val$watershed)) {
@@ -249,8 +249,10 @@ ValidateExternal <- function(ext_data_val) {
   
   if(length(elev_check_vec) > 0) {
     
+    elev_check <- paste0(elev_check_vec, sep = "   ")
+    
     stop('Each watershed:year:plot should have the same elevation recorded.\n',
-         'The following watershed:year:plot combinations have multiple elev_m values: ', elev_check_vec)
+         'The following watershed:year:plot combinations have multiple elev_m values: ', elev_check)
     
   }
   
@@ -276,8 +278,10 @@ ValidateExternal <- function(ext_data_val) {
     
     if(length(for_check_vec) > 0) {
       
+      for_check <- paste0(for_check_vec, sep = "   ")
+      
       stop('Each watershed:year:plot should have the same forest type recorded.\n',
-           'The following watershed:year:plot combinations have multiple forest types recorded: ', for_check_vec)
+           'The following watershed:year:plot combinations have multiple forest types recorded: ', for_check)
       
     }
     
@@ -290,7 +294,7 @@ ValidateExternal <- function(ext_data_val) {
   
   # Check for unrecognized species codes ---------------------------------------
   sp_code_names <- c("FAGR", "POGR", "ABBA", "FRNI", "TSCA", "BECO", "BEPA", "PRPE", "POTR", "ACRU", "PIRU", "ACSA", "ACPE", "FRAM", "BEAL", "PRSE", 
-                     "BEPO", "AMSP", "SOAM", "ACSP", "UNKN", "SAPU", "PRVI", "COAL", "TIAM", "QURU", "PIST", "OSVI", "SASP", "PRSP", "VIAL", NA)
+                     "BEPO", "AMSP", "SOAM", "ACSP", "UNKN", "SAPU", "PRVI", "COAL", "TIAM", "QURU", "PIST", "OSVI", "SASP", "PRSP", "NONE", NA)
   
   if(!all(is.element(data_val$species, sp_code_names))) {
     
@@ -362,7 +366,7 @@ ValidateExternal <- function(ext_data_val) {
   
   
   ###########################################################
-  # Check that vigor class is as expected
+  # Check that vigor is as expected
   ###########################################################
   
   # Check for unrecognized vigor codes -----------------------------------------
@@ -433,9 +437,9 @@ ValidateExternal <- function(ext_data_val) {
   
   # fill in certain missing/incorrect values
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
-  data_val$status <- ifelse(species != "NONE" & is.na(data_val$status), "Live", data_val$status)
-  data_val$vigor <- ifelse(species != "NONE" & data_val$status == "Dead" & is.na(data_val$vigor), "4", 
-                           ifelse(species != "NONE" & data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
+  data_val$status <- ifelse(data_val$species != "NONE" & is.na(data_val$status), "Live", data_val$status)
+  data_val$vigor <- ifelse(data_val$species != "NONE" & data_val$status == "Dead" & is.na(data_val$vigor), "4", 
+                           ifelse(data_val$species != "NONE" & data_val$status == "Dead" & data_val$vigor %in% c("0", "1", "2", "3"), "4", data_val$vigor))
   
   # remove column created only for checks
   data_val <- subset(data_val, select = -water_year_plot)
