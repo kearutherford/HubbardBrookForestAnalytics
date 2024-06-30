@@ -71,7 +71,7 @@ Description...
     
     * **status:** Must be a character variable. Specifies whether the individual tree is alive ("Live") or dead ("Dead").
     
-    * **vigor:** Must be a character variable. For standing dead trees, the vigor should be 0, 1, 2, or 3 (see "Vigor code table" section in "Background information for tree biomass estimations" below). For live trees, the vigor should be 4 or 5.
+    * **vigor:** Must be a character variable. For live trees, the vigor should be 0, 1, 2, or 3 (see "Vigor code table" section in "Background information for tree biomass estimations" below). For standing dead trees, the vigor should be 4 or 5.
     
     * **dbh_cm:** Must be a numeric variable. Provides the diameter at breast height (DBH) of the individual tree in centimeters. 
 
@@ -83,19 +83,153 @@ A dataframe. The columns of the output dataframe depend on the results setting.
 
 * by_tree: 
     * All columns described above in external_data. 
-    * **above_kg:** 
-    * **leaf_kg:** 
+    * **above_kg:** Above-ground tree biomass (including all wood, bark, branch, and foliage) in kilograms.
+    * **leaf_kg:** Tree foliage biomass in kilograms.
     * Any additional (not required) columns in the input dataframe will remain in the output dataframe. 
+
+* by_plot: 
+    * **watershed:** As described above in external_data.
+    * **year:** As described above in external_data.
+    * **plot:** As described above in external_data.
+    * **forest_type:** As described above in external_data.
+    * **elev_m:** As described above in external_data.
+    * **above_L_Mg_ha:** Above-ground live tree biomass (including all wood, bark, branch, and foliage) in megagrams per hectare.
+    * **above_D_Mg_ha:** Above-ground dead tree biomass (including all wood, bark, branch) in megagrams per hectare.
+    * **above_Mg_ha:** Above-ground (live + dead) tree biomass (including all wood, bark, branch, and foliage) in megagrams per hectare.
+    * **leaf_kg:** Tree foliage biomass in megagrams per hectare.
+  
+* by_size: 
+    * All columns described above in by_plot.
+    * **sample_class:** Either tree (DBH >= 10 cm) or sapling (DBH < 10 cm).
 
 ### Demonstrations
 
 ```{r, include = FALSE}
-#library(HubbardBrookForestAnalytics)
+library(HubbardBrookForestAnalytics)
+```
+
+**Results summarized by tree (using internal data):**
+```{r}
+# call the HBEFBiomass() function
+internal_demo_1 <- HBEFBiomass(data_type = "internal",
+                               results = "by_tree")
+
+head(internal_demo_1)
+```
+
+**Notice in the output dataframe:**
+
+* forest_type included 
+
+* extra columns 
+
+<br>
+
+**Results summarized by plot (using external data):**
+```{r}
+# investigate input external dataframe
+#external_demo_data
 ```
 
 ```{r}
+# call the HBEFBiomass() function
+#internal_demo_2 <- HBEFBiomass(data_type = "external",
+#                               external_data = external_demo_data,
+#                               results = "by_tree")
 
+#internal_demo_2
+```
+
+**Notice in the output dataframe:**
+
+* plots without trees (NONE)
+
+* extra columns 
+
+<br>
+
+**Results summarized by plot as well as by size (using internal data):**
+```{r}
+# call the HBEFBiomass() function
+internal_demo_3 <- HBEFBiomass(data_type = "internal",
+                               results = "by_size")
+
+head(internal_demo_3)
 ```
 
 <br>
+
+# General background information for tree biomass estimations
+
+## Biomass workflow
+
+1. Predict tree heights
+
+2. Calculate above-ground live tree biomass 
+
+3. Discount above-ground tree biomass for dead trees 
+
+
+## Species code tables 
+
+All hardwood and softwood species currently included/recognized in the `HBEFBiomass()` function are listed in the tables below. 
+
+**Hardwoods** 
+
+|common name|scientific name|4-letter code|
+|:---|:---|:---|
+|American beech|Fagus grandifolia|FAGR|
+|Bigtooth aspen|Populus grandidentata|POGR|
+|Black cherry|Prunus serotina|PRSE|
+|Black ash|Fraxinus nigra|FRNI|
+|Grey birch|Betula populifolia|BEPO|
+|Juneberry/serviceberry|Amelanchier spp.|AMSP|
+|American mountain-ash|Sorbus americana|SOAM|
+|Mountain birch|Betula cordifolia|BECO|
+|Mountain maple|Acer spicatum|ACSP|
+|Paper birch|Betula papyrifera|BEPA|
+|Pin cherry|Prunus pensylvanica|PRPE|
+|Quaking aspen|Populus tremuloides|POTR|
+|Red maple|Acer rubrum|ACRU|
+|Sugar maple|Acer saccharum|ACSA|
+|Striped maple|Acer pensylvanicum|ACPE|
+|White ash|Fraxinus americana|FRAM|
+|Yellow birch|Betula alleghaniensis|BEAL|
+|Red elderberry|Sambucus racemosa|SAPU|
+|Chokecherry|Prunus virginiana|PRVI|
+|Alternateleaf dogwood|Cornus alternalternifolia|COAL|
+|Basswood|Tilia americana|TIAM|
+|Red oak|Quercus rubra|QURU|
+|Eastern hophornbeam|Ostrya virginiana|OSVI|
+|Willow species|Salix spp.|SASP|
+|Cherry species|Prunus spp.|PRSP|
+|Unknown|NA|UNKN|
+
+<br>
+
+**Softwoods**
+
+|common name|scientific name|4-letter code|
+|:---|:---|:---|
+|Balsam fir|Abies balsamea|ABBA|
+|Eastern hemlock|Tsuga canadensis|TSCA|
+|Red spruce|Picea rubens|PIRU|
+|White pine|Pinus strobus|PIST|
+
+*Note: Four-letter species codes are generally the first two letters of the genus followed by the first two letters of the species.*
+
+
+## Vigor code table 
+
+|vigor class|description|
+|:---|:---|
+|0|alive (Siccama code for live)|
+|1|alive, healthy|
+|2|alive, sick|
+|3|alive, dying|
+|4|standing dead tree|
+|5|standing dead tree with at least 1/3 of top missing (stub)|
+|6|dead and down (not recognized in R package)|
+
+*Note: There is some historical variance in vigor codes. These are Cleavitt-Battles era codes.*
 

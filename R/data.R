@@ -1,4 +1,32 @@
 
+######################################################################
+# datasets that need to be documented
+#####################################################################
+
+#' @title Data for biomass demonstrations
+#'
+#' @description
+#' A fake dataset created for biomass demonstration purposes only
+#'
+#' @format
+#' A dataframe with 9 rows and 7 columns:
+#' \describe{
+#'   \item{watershed}{Whatershed in which the data were collected}
+#'   \item{year}{Year in which the data were collected}
+#'   \item{plot}{Plot in which the individual tree was measured.}
+#'   \item{elev_m}{Elevation in meters above sea level}
+#'   \item{exp_factor}{Expansion factor, number of trees per hectare that a given plot tree represents}
+#'   \item{species}{Species of the individual tree, using four-letter species codes}
+#'   \item{status}{Live or Dead}
+#'   \item{vigor}{0-3 for live trees. 4 or 5 for dead trees.}
+#'   \item{dbh_cm}{Diameter at breast height in cm}
+#'   \item{cbh_m}{Crown base height in meters}
+#' }
+#'
+#' @source Created by Kea Rutherford for demonstration purposes
+"external_demo_data"
+
+
 ################################################################################
 # dataframes used for ValidateOptions and ValidateExternal function tests
 ################################################################################
