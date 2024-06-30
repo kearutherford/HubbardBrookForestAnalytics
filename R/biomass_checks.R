@@ -428,9 +428,9 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   # add necessary columns for future calculations 
-  data_val$sample_class <- ifelse(!is.na(data_val$dbh_cm) & data_val$dbh_cm < 10, "sapling", "tree")
-  data_val$elev_mid <- ifelse(!is.na(data_val$elev_m) & data_val$elev_m >= 630 & data_val$elev_m <= 700, 1, 0)
-  data_val$elev_high <- ifelse(!is.na(data_val$elev_m) & data_val$elev_m > 700, 1, 0)
+  data_val$sample_class <- ifelse(data_val$dbh_cm < 10, "sapling", "tree")
+  data_val$elev_mid <- ifelse(data_val$elev_m >= 630 & data_val$elev_m <= 700, 1, 0)
+  data_val$elev_high <- ifelse(data_val$elev_m > 700, 1, 0)
   
   # fill in certain missing/incorrect values
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)

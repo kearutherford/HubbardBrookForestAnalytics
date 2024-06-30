@@ -274,94 +274,48 @@ test_that("DBH handling works", {
 })
 
 
-test_that("Dataframes have expected column names", {
+test_that("Filling in missing/incorect values is working as expected", {
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_1,
-                           results = "by_tree"),
-               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg"))
+  # missing species is given "UNKN"
+  expect_warning(check_1.1 <- HBEFBiomass(data_type = "external", 
+                                          external_data = bad_trees_29,
+                                          results = "by_tree"))
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_2,
-                           results = "by_tree"),
-               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "cbh_m", "forest_type"))
+  check_1.2 <- subset(check_1.1, watershed == "W5" & year == "1998" & plot == "1" & species != "BEPA" & species != "FAGR")
+  expect_equal(check_1.2$species, "UNKN")
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_1,
-                           results = "by_plot"),
-               c("watershed", "year", "plot", "elev_m", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  # missing status is given "Live"
+  expect_warning(check_2.1 <- HBEFBiomass(data_type = "external", 
+                                          external_data = bad_trees_33,
+                                          results = "by_tree"))
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_2,
-                           results = "by_plot"),
-               c("watershed", "year", "plot", "forest_type", "elev_m", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  check_2.2 <- subset(check_2.1, watershed == "W5" & year == "1998" & plot == "1" & species == "PIST")
+  expect_equal(check_2.2$status, "Live")
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_1,
-                           results = "by_size"),
-               c("watershed", "year", "plot", "elev_m", "sample_class", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  check_2.3 <- subset(check_2.1, species == "NONE")
+  expect_equal(check_2.3$status, as.character(NA))
   
-  expect_named(HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_2,
-                           results = "by_size"),
-               c("watershed", "year", "plot", "forest_type", "elev_m", "sample_class", "above_L_Mg_ha", "above_D_Mg_ha", "above_Mg_ha", "leaf_Mg_ha"))
+  # missing vigor is given "4"
+  expect_warning(check_3.1 <- HBEFBiomass(data_type = "external", 
+                                          external_data = bad_trees_35,
+                                          results = "by_tree"))
   
-})
-
-
-test_that("Final column classes are as expected", {
+  check_3.2 <- subset(check_3.1, watershed == "W5" & year == "1998" & plot == "2" & species == "ACPE")
+  expect_equal(check_3.2$vigor, "4")
   
-  by_tree_1 <- HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_1,
-                           results = "by_tree")
+  check_3.3 <- subset(check_3.1, species == "NONE")
+  expect_equal(check_3.3$vigor, as.character(NA))
   
-  expect_equal(class(by_tree_1$watershed), "character")
-  expect_equal(class(by_tree_1$year), "character")
-  expect_equal(class(by_tree_1$plot), "character")
-  expect_equal(class(by_tree_1$elev_m), "numeric")
-  expect_equal(class(by_tree_1$exp_factor), "numeric")
-  expect_equal(class(by_tree_1$species), "character")
-  expect_equal(class(by_tree_1$status), "character")
-  expect_equal(class(by_tree_1$vigor), "character")
-  expect_equal(class(by_tree_1$dbh_cm), "numeric")
-  expect_equal(class(by_tree_1$ht_cm), "numeric")
-  expect_equal(class(by_tree_1$above_kg), "numeric")
-  expect_equal(class(by_tree_1$leaf_kg), "numeric")
+  # dead tree with live vigor is given "4"
+  expect_warning(check_4.1 <- HBEFBiomass(data_type = "external", 
+                                          external_data = bad_trees_36,
+                                          results = "by_tree"))
   
-  by_tree_2 <- HBEFBiomass(data_type = "external", 
-                           external_data = good_trees_2,
-                           results = "by_tree")
+  check_4.2 <- subset(check_4.1, watershed == "W5" & year == "1998" & plot == "2" & species == "ACPE")
+  expect_equal(check_4.2$vigor, "4")
   
-  expect_equal(class(by_tree_2$watershed), "character")
-  expect_equal(class(by_tree_2$year), "character")
-  expect_equal(class(by_tree_2$plot), "character")
-  expect_equal(class(by_tree_2$elev_m), "numeric")
-  expect_equal(class(by_tree_2$exp_factor), "numeric")
-  expect_equal(class(by_tree_2$species), "character")
-  expect_equal(class(by_tree_2$status), "character")
-  expect_equal(class(by_tree_2$vigor), "character")
-  expect_equal(class(by_tree_2$dbh_cm), "numeric")
-  expect_equal(class(by_tree_2$ht_cm), "numeric")
-  expect_equal(class(by_tree_2$above_kg), "numeric")
-  expect_equal(class(by_tree_2$leaf_kg), "numeric")
-  expect_equal(class(by_tree_2$cbh_m), "numeric")
-  expect_equal(class(by_tree_2$forest_type), "character")
-  
+  check_4.3 <- subset(check_4.1, species == "NONE")
+  expect_equal(check_4.3$vigor, as.character(NA))
   
 })
-
-test_that("Package and hand calculations match", {
-  
-  
-  
-})
-
-
-
-
-
-
-
-
-
 

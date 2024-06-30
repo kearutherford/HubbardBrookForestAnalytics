@@ -143,11 +143,11 @@ PredictBiomass <- function(data) {
 DiscountBiomass <- function(data) {
   
   # discount above biomass for dead trees 
-  data$above_kg <- ifelse(data$status == "Dead" & data$vigor == "4", data$above_kg*0.7283, 
-                          ifelse(data$status == "Dead" & data$vigor == "5", data$above_kg*0.5683, data$above_kg))
+  data$above_kg <- ifelse(!is.na(data$status) & data$status == "Dead" & !is.na(data$vigor) & data$vigor == "4", data$above_kg*0.7283, 
+                          ifelse(!is.na(data$status) & data$status == "Dead" & !is.na(data$vigor) & data$vigor == "5", data$above_kg*0.5683, data$above_kg))
   
   # discount leaf biomass for dead trees
-  data$leaf_kg <- ifelse(data$status == "Dead", 0, data$leaf_kg)
+  data$leaf_kg <- ifelse(!is.na(data$status) & data$status == "Dead", 0, data$leaf_kg)
   
   return(data)
   
