@@ -41,11 +41,11 @@ IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, 
 
 REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
-First published: June 1, 2024
+First published: July 1, 2024
 
 # Tree biomass estimates
 
-Description... 
+The `HBEFBiomass` function uses localized equations to estimate above-ground tree biomass. See "Background information for tree biomass estimations" below for further details. 
 
 ## :eight_spoked_asterisk: `HBEFBiomass( )`
 
@@ -83,6 +83,7 @@ A dataframe. The columns of the output dataframe depend on the results setting.
 
 * by_tree: 
     * All columns described above in external_data. 
+    * **ht_cm:** Predicted height of the individual tree in centimeters.
     * **above_kg:** Above-ground tree biomass (including all wood, bark, branch, and foliage) in kilograms.
     * **leaf_kg:** Tree foliage biomass in kilograms.
     * Any additional (not required) columns in the input dataframe will remain in the output dataframe. 
@@ -96,7 +97,7 @@ A dataframe. The columns of the output dataframe depend on the results setting.
     * **above_L_Mg_ha:** Above-ground live tree biomass (including all wood, bark, branch, and foliage) in megagrams per hectare.
     * **above_D_Mg_ha:** Above-ground dead tree biomass (including all wood, bark, branch) in megagrams per hectare.
     * **above_Mg_ha:** Above-ground (live + dead) tree biomass (including all wood, bark, branch, and foliage) in megagrams per hectare.
-    * **leaf_kg:** Tree foliage biomass in megagrams per hectare.
+    * **leaf_Mg_ha:** Tree foliage biomass in megagrams per hectare.
   
 * by_size: 
     * All columns described above in by_plot.
@@ -117,34 +118,30 @@ internal_demo_1 <- HBEFBiomass(data_type = "internal",
 head(internal_demo_1)
 ```
 
-**Notice in the output dataframe:**
-
-* forest_type included 
-
-* extra columns 
+*Notice in the output dataframe: The `bbd`, `canopy`, `elev_band`, `forest_type`, and `plot_area_ha` columns, which are additional (not required) columns in the internal dataframe, remain in the output dataframe. Any additional columns in the internal or external dataframe will remain in the output dataframe.*
 
 <br>
 
 **Results summarized by plot (using external data):**
 ```{r}
 # investigate input external dataframe
-#external_demo_data
+external_demo_data
 ```
+
+*Notice in the input dataframe: The plot without trees (W6, 1997, plot 2) is represented by species = "NONE". Watershed, year, plot, elev_m, and exp_factor are filled in as appropriate. All tree-level variables (i.e., status, vigor, dbh_cm) are NA.*
+
+<br>
 
 ```{r}
 # call the HBEFBiomass() function
-#internal_demo_2 <- HBEFBiomass(data_type = "external",
-#                               external_data = external_demo_data,
-#                               results = "by_tree")
+internal_demo_2 <- HBEFBiomass(data_type = "external",
+                               external_data = external_demo_data,
+                               results = "by_plot")
 
-#internal_demo_2
+internal_demo_2
 ```
 
-**Notice in the output dataframe:**
-
-* plots without trees (NONE)
-
-* extra columns 
+*Notice in the output dataframe: The plot without trees (W6, 1997, plot 2) has 0 Mg/ha in all biomass columns.*
 
 <br>
 
@@ -157,17 +154,25 @@ internal_demo_3 <- HBEFBiomass(data_type = "internal",
 head(internal_demo_3)
 ```
 
+*Notice in the output dataframe: Since forest_type is included in the internal data, it is carried through into the summarized output data. The same idea applies to external data - if forest_type is included in the input dataframe, it will be carried through into the summarized output data.*
+
 <br>
 
-# General background information for tree biomass estimations
+# Background information for tree biomass estimations
 
 ## Biomass workflow
 
-1. Predict tree heights
+**Step 1: Predict tree heights**
 
-2. Calculate above-ground live tree biomass 
+We fit new equations to predict height based on species, DBH, and elevation. These equations were fit using valley-wide height samples. 
 
-3. Discount above-ground tree biomass for dead trees 
+**Step 2. Calculate above-ground live tree biomass**
+
+We fit new equations to predict total above-ground tree biomass (including all wood, bark, branch, and foliage). We fit separate equations to predict tree foliage biomass on its own. 
+
+**Step 3. Discount above-ground tree biomass for dead trees**
+
+Standing dead trees lose mass in two ways: (1) they degrade with pieces falling and transferring to other biomass pools (e.g., stem tops break and become coarse woody debris) and (2) the remaining structures decay as measured by their density (i.e., mass/volume). We accounted for the decay and degrade of standing dead trees by discounting the live biomass estimates based on vigor. For trees/saplings with a vigor code of 4, the discount rate is 0.7283 (above-ground live tree biomass x 0.7283). For trees/saplings with a vigor code of 5, the discount rate is 0.5683 (above-ground live tree biomass x 0.5683). 
 
 
 ## Species code tables 
@@ -215,6 +220,7 @@ All hardwood and softwood species currently included/recognized in the `HBEFBiom
 |Eastern hemlock|Tsuga canadensis|TSCA|
 |Red spruce|Picea rubens|PIRU|
 |White pine|Pinus strobus|PIST|
+|Unknown|NA|UNKN|
 
 *Note: Four-letter species codes are generally the first two letters of the genus followed by the first two letters of the species.*
 

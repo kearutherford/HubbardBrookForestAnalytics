@@ -1,6 +1,4 @@
 
-#test <- HBEFBiomass(data_type = "internal", results = "by_tree")
-
 ################################################################################
 ################################################################################
 # Top-level function
@@ -10,13 +8,26 @@
 #' @title HBEFBiomass
 #'
 #' @description
-#' Describe... 
+#' Estimates above-ground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
 #'
-#' @param data_type describe... 
-#' @param external_data describe...
-#' @param results describe...
+#' @param data_type Specifies whether the data of interest are internal to the package (meaning the clean, archived tree data from Hubbard Brook Experimental Forest for all watersheds, plots, and years) or external to the package (meaning data provided by the user). Must be set to "internal" or "external". The default is set to "internal".
+#' @param external_data Only required if data_type is set to "external." A dataframe or tibble with the following columns: watershed, year, plot, elev_m, exp_factor, species, status, vigor, and dbh_cm. A forest_type column is optional. Each row must be an observation of an individual tree.
+#' @param results Specifies whether the results will be summarized by tree, by plot, or by plot as well as size class (size class has two categories: (1) tree, DBH >= 10 cm and (2) sapling, DBH < 10 cm). Must be set to either "by_tree", "by_plot", or "by_size". The default is set to "by_plot". 
 #'
-#' @return describe... 
+#' @return Depends on the results setting:
+#' \itemize{
+#' \item by_tree: a dataframe with tree-level biomass estimates (reported in kilograms).
+#' \item by_plot: a dataframe with plot-level biomass estimates (reported in megagrams per hectare).
+#' \item by_size: a dataframe with plot-level biomass estimates, further summarized by size class (tree/sapling; reported in megagrams per hectare).
+#' }
+#' 
+#' @examples
+#' HBEFBiomass(data_type = "internal",
+#'             results = "by_tree")
+#'             
+#' HBEFBiomass(data_type = "external",
+#'             external_data = external_demo_data,
+#'             results = "by_plot")
 #'
 #' @export
 
@@ -444,4 +455,15 @@ ValidateExternal <- function(ext_data_val) {
   return(data_val)
   
 }
+
+
+globalVariables(c("a", "above_g", "b", "b1_ag", "b1_lf", "b2_ag", "b2_lf", "b3_ag", "b3_lf", "calc_bio", "calc_ht",
+    "crown_ratio", "cull", "d", "dbh_cm", "decay_class", "division", "e", "elev_high", "elev_mid",
+    "eqn", "eqn_ag", "eqn_lf", "foliage_c", "ht1_m", "ht2_m", "ht_m", "leaf_g", "merch_bark_c",
+    "merch_bark_kg", "merch_top_c", "merch_top_kg", "merch_total_c", "merch_total_kg",
+    "merch_wood_c", "merch_wood_kg", "province", "sample_class", "site species",
+    "species_fia", "spp_hgt", "status", "stump_bark_c", "stump_bark_kg", "stump_total_c",
+    "stump_total_kg", "stump_wood_c", "stump_wood_kg", "top", "total_ag_c", "total_ag_kg",
+    "total_bark_c", "total_bark_kg", "total_branch_c", "total_branch_kg",
+    "total_wood_c", "total_wood_kg", "vigor", "water_year_plot", "site", "species"))
 

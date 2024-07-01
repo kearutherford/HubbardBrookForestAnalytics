@@ -7,15 +7,29 @@
 HBEFBiomass(data_type = "internal", external_data, results = "by_plot")
 }
 \arguments{
-\item{data_type}{describe...}
+\item{data_type}{Specifies whether the data of interest are internal to the package (meaning the clean, archived tree data from Hubbard Brook Experimental Forest for all watersheds, plots, and years) or external to the package (meaning data provided by the user). Must be set to "internal" or "external". The default is set to "internal".}
 
-\item{external_data}{describe...}
+\item{external_data}{Only required if data_type is set to "external." A dataframe or tibble with the following columns: watershed, year, plot, elev_m, exp_factor, species, status, vigor, and dbh_cm. A forest_type column is optional. Each row must be an observation of an individual tree.}
 
-\item{results}{describe...}
+\item{results}{Specifies whether the results will be summarized by tree, by plot, or by plot as well as size class (size class has two categories: (1) tree, DBH >= 10 cm and (2) sapling, DBH < 10 cm). Must be set to either "by_tree", "by_plot", or "by_size". The default is set to "by_plot".}
 }
 \value{
-describe...
+Depends on the results setting:
+\itemize{
+\item by_tree: a dataframe with tree-level biomass estimates (reported in kilograms).
+\item by_plot: a dataframe with plot-level biomass estimates (reported in megagrams per hectare).
+\item by_size: a dataframe with plot-level biomass estimates, further summarized by size class (tree/sapling; reported in megagrams per hectare).
+}
 }
 \description{
-Describe...
+Estimates above-ground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
+}
+\examples{
+HBEFBiomass(data_type = "internal",
+            results = "by_tree")
+            
+HBEFBiomass(data_type = "external",
+            external_data = external_demo_data,
+            results = "by_plot")
+
 }

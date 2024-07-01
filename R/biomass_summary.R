@@ -1,4 +1,10 @@
 
+################################################################################
+################################################################################
+# VSUmBy function
+################################################################################
+################################################################################
+
 SumBy <- function(data, sum_by) {
   
   # convert to Mg/ha
@@ -16,6 +22,12 @@ SumBy <- function(data, sum_by) {
   
 }
 
+
+################################################################################
+################################################################################
+# ByPlot function
+################################################################################
+################################################################################
 
 ByPlot <- function(sum_data) {
   
@@ -71,10 +83,17 @@ ByPlot <- function(sum_data) {
       
   }
   
-  return(fill_df)
+  return_df <- fill_df[order(fill_df$watershed, fill_df$year, fill_df$plot), ]
+  return(return_df)
   
 }
 
+
+################################################################################
+################################################################################
+# BySize function
+################################################################################
+################################################################################
 
 BySize <- function(sum_data) {
   
@@ -91,7 +110,7 @@ BySize <- function(sum_data) {
     
   }
   
-  # loop through each watershed, year, plot, and sampling class
+  # loop through each watershed, year, plot, and sample class
   sum_data$water_year_plot <- paste(sum_data$watershed, sum_data$year, sum_data$plot, sep = "_")
   unq_ids <- unique(sum_data$water_year_plot)
   
@@ -159,7 +178,8 @@ BySize <- function(sum_data) {
     
   }
   
-  return(fill_df)
+  return_df <- fill_df[order(fill_df$watershed, fill_df$year, fill_df$plot, fill_df$sample_class), ]
+  return(return_df)
   
 }
 
