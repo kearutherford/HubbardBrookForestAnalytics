@@ -4,9 +4,9 @@
 \name{HubbardBrookForestAnalytics-package}
 \alias{HubbardBrookForestAnalytics}
 \alias{HubbardBrookForestAnalytics-package}
-\title{HubbardBrookForestAnalytics: What the Package Does (One Line, Title Case)}
+\title{HubbardBrookForestAnalytics: What the Package Does}
 \description{
-What the package does (one paragraph).
+What the package does in one paragraph.
 }
 \seealso{
 Useful links:
