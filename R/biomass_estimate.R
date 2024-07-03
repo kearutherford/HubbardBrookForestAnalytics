@@ -158,7 +158,7 @@ PredictBiomass <- function(data) {
   # re-order columns
   # this approach allows flexibility for which additional columns are included in the dataframe 
   name_vec1 <- c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "sample_class")
-  name_vec2 <- colnames(merged_df[,!is.element(colnames(merged_df), name_vec1)])
+  name_vec2 <- colnames(subset(merged_df, select = -c(watershed, year, plot, elev_m, exp_factor, species, status, vigor, dbh_cm, ht_cm, above_kg, leaf_kg, sample_class)))
   return_df <- subset(merged_df, select = c(name_vec1, name_vec2))
   return_df <- return_df[order(return_df$watershed, return_df$year, return_df$plot), ]
   
