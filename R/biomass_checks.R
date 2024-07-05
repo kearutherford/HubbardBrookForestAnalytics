@@ -8,7 +8,7 @@
 #' @title HBEFBiomass
 #'
 #' @description
-#' Estimates above-ground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
+#' Estimates aboveground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
 #'
 #' @param data_type Specifies whether the data of interest are internal to the package (meaning the clean, archived tree data from Hubbard Brook Experimental Forest for all watersheds, plots, and years) or external to the package (meaning data provided by the user). Must be set to "internal" or "external". The default is set to "internal".
 #' @param external_data Only required if data_type is set to "external." A dataframe or tibble with the following columns: watershed, year, plot, elev_m, exp_factor, species, status, vigor, and dbh_cm. A forest_type column is optional. Each row must be an observation of an individual tree.

@@ -73,7 +73,7 @@ First published: July 1, 2024
 # Tree biomass estimates
 
 The `HBEFBiomass` function uses localized equations to estimate
-above-ground tree biomass. See “Background information for tree biomass
+aboveground tree biomass. See “Background information for tree biomass
 estimations” below for further details.
 
 ## :eight_spoked_asterisk: `HBEFBiomass( )`
@@ -134,6 +134,11 @@ estimations” below for further details.
     Must be set to either “by_tree”, “by_plot”, or “by_size”. The
     default is set to “by_plot”.
 
+*Note: For plots without trees, species should be set to NONE.
+Watershed, year, plot, elev_m, and exp_factor columns shoudl be filled
+in as appropriate. And all tree-level variables (status, vigor, dbh_cm)
+should be NA.*
+
 ### Outputs
 
 A dataframe. The columns of the output dataframe depend on the results
@@ -142,7 +147,7 @@ setting.
 - by_tree:
   - All columns described above in external_data.
   - **ht_cm:** Predicted height of the individual tree in centimeters.
-  - **above_kg:** Above-ground tree biomass (including all wood, bark,
+  - **above_kg:** Aboveground tree biomass (including all wood, bark,
     branch, and foliage) in kilograms.
   - **leaf_kg:** Tree foliage biomass in kilograms.
   - Any additional (not required) columns in the input dataframe will
@@ -153,11 +158,11 @@ setting.
   - **plot:** As described above in external_data.
   - **forest_type:** As described above in external_data.
   - **elev_m:** As described above in external_data.
-  - **above_L_Mg_ha:** Above-ground live tree biomass (including all
+  - **above_L_Mg_ha:** Aboveground live tree biomass (including all
     wood, bark, branch, and foliage) in megagrams per hectare.
-  - **above_D_Mg_ha:** Above-ground dead tree biomass (including all
+  - **above_D_Mg_ha:** Aboveground dead tree biomass (including all
     wood, bark, branch) in megagrams per hectare.
-  - **above_Mg_ha:** Above-ground (live + dead) tree biomass (including
+  - **above_Mg_ha:** Aboveground (live + dead) tree biomass (including
     all wood, bark, branch, and foliage) in megagrams per hectare.
   - **leaf_Mg_ha:** Tree foliage biomass in megagrams per hectare.
 - by_size:
@@ -302,13 +307,17 @@ output data.*
 We fit new equations to predict height based on species, DBH, and
 elevation. These equations were fit using valley-wide height samples.
 
-**Step 2. Calculate above-ground live tree biomass**
+<br>
 
-We fit new equations to predict total above-ground tree biomass
+**Step 2. Calculate aboveground live tree biomass**
+
+We fit new equations to predict total aboveground tree biomass
 (including all wood, bark, branch, and foliage). We fit separate
 equations to predict tree foliage biomass on its own.
 
-**Step 3. Discount above-ground tree biomass for dead trees**
+<br>
+
+**Step 3. Discount aboveground tree biomass for dead trees**
 
 Standing dead trees lose mass in two ways: (1) they degrade with pieces
 falling and transferring to other biomass pools (e.g., stem tops break
@@ -316,9 +325,9 @@ and become coarse woody debris) and (2) the remaining structures decay
 as measured by their density (i.e., mass/volume). We accounted for the
 decay and degrade of standing dead trees by discounting the live biomass
 estimates based on vigor. For trees/saplings with a vigor code of 4, the
-discount rate is 0.7283 (above-ground live tree biomass x 0.7283). For
+discount rate is 0.7283 (aboveground live tree biomass x 0.7283). For
 trees/saplings with a vigor code of 5, the discount rate is 0.5683
-(above-ground live tree biomass x 0.5683).
+(aboveground live tree biomass x 0.5683).
 
 ## Species code tables
 
@@ -329,31 +338,31 @@ All hardwood and softwood species currently included/recognized in the
 
 | common name            | scientific name           | 4-letter code |
 |:-----------------------|:--------------------------|:--------------|
-| American beech         | Fagus grandifolia         | FAGR          |
-| Bigtooth aspen         | Populus grandidentata     | POGR          |
-| Black cherry           | Prunus serotina           | PRSE          |
-| Black ash              | Fraxinus nigra            | FRNI          |
-| Grey birch             | Betula populifolia        | BEPO          |
-| Juneberry/serviceberry | Amelanchier spp.          | AMSP          |
-| American mountain-ash  | Sorbus americana          | SOAM          |
-| Mountain birch         | Betula cordifolia         | BECO          |
-| Mountain maple         | Acer spicatum             | ACSP          |
-| Paper birch            | Betula papyrifera         | BEPA          |
-| Pin cherry             | Prunus pensylvanica       | PRPE          |
-| Quaking aspen          | Populus tremuloides       | POTR          |
+| Striped maple          | Acer pensylvanicum        | ACPE          |
 | Red maple              | Acer rubrum               | ACRU          |
 | Sugar maple            | Acer saccharum            | ACSA          |
-| Striped maple          | Acer pensylvanicum        | ACPE          |
-| White ash              | Fraxinus americana        | FRAM          |
+| Mountain maple         | Acer spicatum             | ACSP          |
+| Juneberry/serviceberry | Amelanchier spp.          | AMSP          |
 | Yellow birch           | Betula alleghaniensis     | BEAL          |
-| Red elderberry         | Sambucus racemosa         | SAPU          |
-| Chokecherry            | Prunus virginiana         | PRVI          |
+| Mountain birch         | Betula cordifolia         | BECO          |
+| Paper birch            | Betula papyrifera         | BEPA          |
+| Grey birch             | Betula populifolia        | BEPO          |
 | Alternateleaf dogwood  | Cornus alternalternifolia | COAL          |
-| Basswood               | Tilia americana           | TIAM          |
-| Red oak                | Quercus rubra             | QURU          |
+| American beech         | Fagus grandifolia         | FAGR          |
+| White ash              | Fraxinus americana        | FRAM          |
+| Black ash              | Fraxinus nigra            | FRNI          |
 | Eastern hophornbeam    | Ostrya virginiana         | OSVI          |
-| Willow species         | Salix spp.                | SASP          |
+| Bigtooth aspen         | Populus grandidentata     | POGR          |
+| Quaking aspen          | Populus tremuloides       | POTR          |
+| Pin cherry             | Prunus pensylvanica       | PRPE          |
+| Black cherry           | Prunus serotina           | PRSE          |
 | Cherry species         | Prunus spp.               | PRSP          |
+| Chokecherry            | Prunus virginiana         | PRVI          |
+| Red oak                | Quercus rubra             | QURU          |
+| Willow species         | Salix spp.                | SASP          |
+| Red elderberry         | Sambucus racemosa         | SAPU          |
+| American mountain-ash  | Sorbus americana          | SOAM          |
+| Basswood               | Tilia americana           | TIAM          |
 | Unknown                | NA                        | UNKN          |
 
 <br>
@@ -363,9 +372,9 @@ All hardwood and softwood species currently included/recognized in the
 | common name     | scientific name  | 4-letter code |
 |:----------------|:-----------------|:--------------|
 | Balsam fir      | Abies balsamea   | ABBA          |
-| Eastern hemlock | Tsuga canadensis | TSCA          |
 | Red spruce      | Picea rubens     | PIRU          |
 | White pine      | Pinus strobus    | PIST          |
+| Eastern hemlock | Tsuga canadensis | TSCA          |
 | Unknown         | NA               | UNKN          |
 
 *Note: Four-letter species codes are generally the first two letters of
