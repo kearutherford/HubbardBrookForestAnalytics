@@ -230,9 +230,7 @@ ValidateExternal <- function(ext_data_val) {
   
   # Check for NA ---------------------------------------------------------------
   if ('TRUE' %in% is.na(data_val$elev_m)) {
-    warning('There are missing elevations in the provided dataframe.\n',
-            'Trees in plots with NA elevation will have NA biomass estimates. Consider investigating these plots.\n',
-            ' \n')
+    stop('There are missing elevations in the provided dataframe.')
   }
   
   # Check for negative elev ----------------------------------------------------
@@ -439,7 +437,7 @@ ValidateExternal <- function(ext_data_val) {
   ###########################################################
   
   # add necessary columns for future calculations 
-  data_val$sample_class <- ifelse(data_val$dbh_cm < 10, "sapling", "tree")
+  data_val$sample_class <- ifelse(is.na(data_val$dbh_cm), "unk", ifelse(data_val$dbh_cm < 10, "sapling", "tree"))
   data_val$elev_mid <- ifelse(data_val$elev_m >= 630 & data_val$elev_m <= 700, 1, 0)
   data_val$elev_high <- ifelse(data_val$elev_m > 700, 1, 0)
   

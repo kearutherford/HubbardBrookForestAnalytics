@@ -166,10 +166,10 @@ test_that("Expansion factor handling works", {
 
 test_that("Elevation handling works", {
   
-  expect_warning(HBEFBiomass(data_type = "external", 
-                             external_data = bad_trees_24,
-                             results = "by_plot"),
-                 'There are missing elevations in the provided dataframe.\nTrees in plots with NA elevation will have NA biomass estimates. Consider investigating these plots.\n')
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_24,
+                           results = "by_plot"),
+              'There are missing elevations in the provided dataframe.')
   
   expect_error(HBEFBiomass(data_type = "external", 
                            external_data = bad_trees_25,

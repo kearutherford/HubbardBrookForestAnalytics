@@ -8,7 +8,7 @@
 PredictHeight <- function(data) {
   
   # add variable to dataframe 
-  data$calc_ht <- ifelse(is.na(data$dbh_cm) | is.na(data$elev_m), "N", "Y")
+  data$calc_ht <- ifelse(is.na(data$dbh_cm), "N", "Y")
   
   # merge coefficient dataframe
   data2 <- merge(data, hgt_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
@@ -40,7 +40,7 @@ PredictHeight <- function(data) {
 PredictBiomass <- function(data) {
   
   # add variable to dataframe 
-  # NA ht_cm has NA dbh_cm and NA elev_m baked in (see function above)
+  # NA ht_cm has NA dbh_cm baked in (see function above)
   data$calc_bio <- ifelse(is.na(data$ht_cm), "N", "Y")
   
   # split data 

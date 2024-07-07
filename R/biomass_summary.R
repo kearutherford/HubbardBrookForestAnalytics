@@ -75,7 +75,7 @@ ByPlot <- function(sum_data) {
                                         ifelse(all(is.na(dead_trees$above)), NA, 
                                         sum(dead_trees$above, na.rm = TRUE))),5)
         
-      fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
+      fill_df$above_Mg_ha[n] <- (fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
         
       fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) == 0, 0,
                                      ifelse(all(is.na(live_trees$leaf)), NA, 
@@ -132,46 +132,35 @@ BySize <- function(sum_data) {
       if("forest_type" %in% colnames(sum_data)) {
         fill_df$forest_type[n] <- all_trees$forest_type[1]
       }
-      
-      if (all(is.na(all_trees$dbh_cm)) & !all(all_trees$species == "NONE")) {
         
-        fill_df$above_L_Mg_ha[n] <- NA
-        fill_df$above_D_Mg_ha[n] <- NA
-        fill_df$above_Mg_ha[n] <- NA
-        fill_df$leaf_Mg_ha[n] <- NA
+      all_class <- subset(all_trees, sample_class == s | sample_class == "unk")
         
-      } else { 
-        
-        all_class <- subset(all_trees, sample_class == s)
-        
-        if(nrow(all_class) > 0) {
+      if(nrow(all_class) > 0) {
                 
-          live_trees <- subset(all_class, status == "Live" | species == "NONE")
-          dead_trees <- subset(all_class, status == "Dead" | species == "NONE")
+        live_trees <- subset(all_class, status == "Live" | species == "NONE")
+        dead_trees <- subset(all_class, status == "Dead" | species == "NONE")
                 
-          fill_df$above_L_Mg_ha[n] <- round(ifelse(nrow(live_trees) == 0, 0,
-                                            ifelse(all(is.na(live_trees$above)), NA, 
-                                            sum(live_trees$above, na.rm = TRUE))),5)
+        fill_df$above_L_Mg_ha[n] <- round(ifelse(nrow(live_trees) == 0, 0,
+                                          ifelse(all(is.na(live_trees$above)), NA, 
+                                          sum(live_trees$above, na.rm = TRUE))),5)
   
-          fill_df$above_D_Mg_ha[n] <- round(ifelse(nrow(dead_trees) == 0, 0,
-                                            ifelse(all(is.na(dead_trees$above)), NA, 
-                                            sum(dead_trees$above, na.rm = TRUE))),5)
+        fill_df$above_D_Mg_ha[n] <- round(ifelse(nrow(dead_trees) == 0, 0,
+                                          ifelse(all(is.na(dead_trees$above)), NA, 
+                                          sum(dead_trees$above, na.rm = TRUE))),5)
                   
-          fill_df$above_Mg_ha[n] <- sum(fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
+        fill_df$above_Mg_ha[n] <- (fill_df$above_L_Mg_ha[n] + fill_df$above_D_Mg_ha[n])
                 
-          fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) == 0, 0,
-                                         ifelse(all(is.na(live_trees$leaf)), NA, 
-                                         sum(live_trees$leaf, na.rm = TRUE))),5)
+        fill_df$leaf_Mg_ha[n] <- round(ifelse(nrow(live_trees) == 0, 0,
+                                       ifelse(all(is.na(live_trees$leaf)), NA, 
+                                       sum(live_trees$leaf, na.rm = TRUE))),5)
           
-        } else {
+      } else {
               
-          fill_df$above_L_Mg_ha[n] <- 0
-          fill_df$above_D_Mg_ha[n] <- 0
-          fill_df$above_Mg_ha[n] <- 0
-          fill_df$leaf_Mg_ha[n] <- 0
+        fill_df$above_L_Mg_ha[n] <- 0
+        fill_df$above_D_Mg_ha[n] <- 0
+        fill_df$above_Mg_ha[n] <- 0
+        fill_df$leaf_Mg_ha[n] <- 0
               
-        }
-          
       }
       
     }
