@@ -22,7 +22,7 @@ Depends on the results setting:
 }
 }
 \description{
-Estimates above-ground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
+Estimates aboveground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
 }
 \examples{
 HBEFBiomass(data_type = "internal",

@@ -132,9 +132,9 @@ BySize <- function(sum_data) {
       if("forest_type" %in% colnames(sum_data)) {
         fill_df$forest_type[n] <- all_trees$forest_type[1]
       }
-        
+      
       all_class <- subset(all_trees, sample_class == s | sample_class == "unk")
-        
+      
       if(nrow(all_class) > 0) {
                 
         live_trees <- subset(all_class, status == "Live" | species == "NONE")

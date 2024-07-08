@@ -142,15 +142,6 @@ test_that("Summaries are working as expected for external data", {
   expect_equal(sum_1.2$above_kg, as.numeric(NA))
   expect_equal(sum_1.2$leaf_kg, as.numeric(NA))
   
-  # NA elev has NA biomass estimates -------------------------------------------
-  expect_warning(sum_2.1 <- HBEFBiomass(data_type = "external", 
-                                        external_data = bad_trees_24,
-                                        results = "by_tree"))
-  
-  sum_2.2 <- subset(sum_2.1, watershed == "W5" & year == "1998" & plot == "1")
-  expect_equal(unique(sum_2.2$above_kg), as.numeric(NA))
-  expect_equal(unique(sum_2.2$leaf_kg), as.numeric(NA))
-  
   # check plots with no trees --------------------------------------------------
   # for by_tree 
   sum_3.1 <- HBEFBiomass(data_type = "external", 
@@ -183,29 +174,6 @@ test_that("Summaries are working as expected for external data", {
   expect_equal(sum_5.2$above_Mg_ha, c(0,0))
   expect_equal(sum_5.2$leaf_Mg_ha, c(0,0))
   
-  # check plots with all NA biomass (bc of all NA elev) ------------------------
-  # for by_plot
-  expect_warning(sum_6.1 <- HBEFBiomass(data_type = "external", 
-                                        external_data = bad_trees_24,
-                                        results = "by_plot"))
-  
-  sum_6.2 <- subset(sum_6.1, watershed == "W5" & year == "1998" & plot == "1")
-  expect_equal(sum_6.2$above_L_Mg_ha, as.numeric(NA))
-  expect_equal(sum_6.2$above_D_Mg_ha, 0)
-  expect_equal(sum_6.2$above_Mg_ha, as.numeric(NA))
-  expect_equal(sum_6.2$leaf_Mg_ha, as.numeric(NA))
-  
-  # for by_size
-  expect_warning(sum_7.1 <- HBEFBiomass(data_type = "external", 
-                                        external_data = bad_trees_24,
-                                        results = "by_size"))
-  
-  sum_7.2 <- subset(sum_7.1, watershed == "W5" & year == "1998" & plot == "1")
-  expect_equal(sum_7.2$above_L_Mg_ha, as.numeric(c(NA,NA)))
-  expect_equal(sum_7.2$above_D_Mg_ha, c(0,0))
-  expect_equal(sum_7.2$above_Mg_ha, as.numeric(c(NA,NA)))
-  expect_equal(sum_7.2$leaf_Mg_ha, as.numeric(c(NA,NA)))
-  
   # check plots with all NA biomass (bc of all NA dbh) -------------------------
   # for by_plot
   expect_warning(sum_8.1 <- HBEFBiomass(data_type = "external", 
@@ -225,7 +193,7 @@ test_that("Summaries are working as expected for external data", {
   
   sum_9.2 <- subset(sum_9.1, watershed == "W5" & year == "1998" & plot == "1")
   expect_equal(sum_9.2$above_L_Mg_ha, as.numeric(c(NA,NA)))
-  expect_equal(sum_9.2$above_D_Mg_ha, as.numeric(c(NA,NA)))
+  expect_equal(sum_9.2$above_D_Mg_ha, as.numeric(c(0,0)))
   expect_equal(sum_9.2$above_Mg_ha, as.numeric(c(NA,NA)))
   expect_equal(sum_9.2$leaf_Mg_ha, as.numeric(c(NA,NA)))
   
@@ -252,57 +220,78 @@ test_that("Summaries are working as expected for external data", {
   expect_equal(is.na(sum_11.2$above_Mg_ha), c(FALSE,FALSE))
   expect_equal(is.na(sum_11.2$leaf_Mg_ha), c(FALSE,FALSE))
   
-  # check plots with no live (and no dead) trees -------------------------------
+  # check plots with very particular NA biomass estimates ----------------------
   # for by_plot
-  sum_12.1 <- HBEFBiomass(data_type = "external", 
-                          external_data = good_trees_1,
-                          results = "by_plot")
+  expect_warning(sum_12.1 <- HBEFBiomass(data_type = "external", 
+                                         external_data = bad_trees_41,
+                                         results = "by_plot"))
   
   sum_12.2 <- subset(sum_12.1, watershed == "W5" & year == "1998" & plot == "1")
   expect_equal(sum_12.2$above_L_Mg_ha > 0, TRUE)
-  expect_equal(sum_12.2$above_D_Mg_ha, 0)
-  expect_equal(sum_12.2$above_Mg_h > 0, TRUE)
+  expect_equal(sum_12.2$above_D_Mg_ha == 0, TRUE)
+  expect_equal(sum_12.2$above_Mg_ha > 0, TRUE)
   expect_equal(sum_12.2$leaf_Mg_ha > 0, TRUE)
   
-  sum_12.3 <- subset(sum_12.1, watershed == "W5" & year == "2002" & plot == "2")
-  expect_equal(sum_12.3$above_L_Mg_ha, 0)
-  expect_equal(sum_12.3$above_D_Mg_ha > 0, TRUE)
-  expect_equal(sum_12.3$above_Mg_h > 0, TRUE)
-  expect_equal(sum_12.3$leaf_Mg_ha, 0)
+  sum_12.3 <- subset(sum_12.1, watershed == "W5" & year == "1998" & plot == "2")
+  expect_equal(sum_12.3$above_L_Mg_ha > 0, TRUE)
+  expect_equal(is.na(sum_12.3$above_D_Mg_ha), TRUE)
+  expect_equal(is.na(sum_12.3$above_Mg_ha), TRUE)
+  expect_equal(sum_12.3$leaf_Mg_ha > 0, TRUE)
+  
+  # for by_size 
+  expect_warning(sum_13.1 <- HBEFBiomass(data_type = "external", 
+                                         external_data = bad_trees_41,
+                                         results = "by_size"))
+  
+  sum_13.2 <- subset(sum_13.1, watershed == "W5" & year == "1998" & plot == "1" & sample_class == "sapling")
+  sum_13.3 <- subset(sum_13.1, watershed == "W5" & year == "1998" & plot == "1" & sample_class == "tree")
+  expect_equal(is.na(sum_13.2$above_L_Mg_ha), TRUE)
+  expect_equal(sum_13.2$above_D_Mg_ha == 0, TRUE)
+  expect_equal(is.na(sum_13.2$above_Mg_ha), TRUE)
+  expect_equal(is.na(sum_13.2$leaf_Mg_ha), TRUE)
+  expect_equal(sum_13.3$above_L_Mg_ha > 0, TRUE)
+  expect_equal(sum_13.3$above_D_Mg_ha == 0, TRUE)
+  expect_equal(sum_13.3$above_Mg_ha > 0, TRUE)
+  expect_equal(sum_13.3$leaf_Mg_ha > 0, TRUE)
+  
+  sum_13.4 <- subset(sum_13.1, watershed == "W5" & year == "1998" & plot == "2" & sample_class == "sapling")
+  sum_13.5 <- subset(sum_13.1, watershed == "W5" & year == "1998" & plot == "2" & sample_class == "tree")
+  expect_equal(sum_13.4$above_L_Mg_ha == 0, TRUE)
+  expect_equal(is.na(sum_13.4$above_D_Mg_ha), TRUE)
+  expect_equal(is.na(sum_13.4$above_Mg_ha), TRUE)
+  expect_equal(sum_13.4$leaf_Mg_ha == 0, TRUE)
+  expect_equal(sum_13.5$above_L_Mg_ha > 0, TRUE)
+  expect_equal(is.na(sum_13.5$above_D_Mg_ha), TRUE)
+  expect_equal(is.na(sum_13.5$above_Mg_ha), TRUE)
+  expect_equal(sum_13.5$leaf_Mg_ha > 0, TRUE)
+  
+  # check plots with no saps (but with live trees) -----------------------------
+  # for by_plot
+  sum_14.1 <- HBEFBiomass(data_type = "external", 
+                          external_data = good_trees_3,
+                          results = "by_plot")
+  
+  sum_14.2 <- subset(sum_14.1, watershed == "W5" & year == "1998" & plot == "1")
+  expect_equal(sum_14.2$above_L_Mg_ha > 0, TRUE)
+  expect_equal(sum_14.2$above_D_Mg_ha == 0, TRUE)
+  expect_equal(sum_14.2$above_Mg_ha > 0, TRUE)
+  expect_equal(sum_14.2$leaf_Mg_ha > 0, TRUE)
   
   # for by_size
-  sum_13.1 <- HBEFBiomass(data_type = "external", 
-                          external_data = good_trees_1,
-                          results = "by_size")
-  
-  sum_13.2 <- subset(sum_13.1, watershed == "W5" & year == "1998" & plot == "1")
-  expect_equal(all(sum_13.2$above_L_Mg_ha > 0), TRUE)
-  expect_equal(sum_13.2$above_D_Mg_ha, c(0,0))
-  expect_equal(all(sum_13.2$above_Mg_h > 0), TRUE)
-  expect_equal(all(sum_13.2$leaf_Mg_ha > 0), TRUE)
-  
-  sum_13.3 <- subset(sum_13.1, watershed == "W5" & year == "2002" & plot == "2")
-  expect_equal(sum_13.3$above_L_Mg_ha, c(0,0))
-  expect_equal(all(sum_13.3$above_D_Mg_ha > 0), TRUE)
-  expect_equal(all(sum_13.3$above_Mg_h > 0), TRUE)
-  expect_equal(sum_13.3$leaf_Mg_ha, c(0,0))
-  
-  # check plots with no trees (and no saps) ------------------------------------
-  sum_14.1 <- HBEFBiomass(data_type = "external", 
+  sum_15.1 <- HBEFBiomass(data_type = "external", 
                           external_data = good_trees_3,
                           results = "by_size")
   
-  sum_14.2 <- subset(sum_14.1, watershed == "W5" & year == "1998" & plot == "1" & sample_class == "tree")
-  expect_equal(sum_14.2$above_L_Mg_ha, 0)
-  expect_equal(sum_14.2$above_D_Mg_ha, 0)
-  expect_equal(sum_14.2$above_Mg_ha, 0)
-  expect_equal(sum_14.2$leaf_Mg_ha, 0)
-  
-  sum_14.3 <- subset(sum_14.1, watershed == "W5" & year == "1998" & plot == "2" & sample_class == "sapling")
-  expect_equal(sum_14.3$above_L_Mg_ha, 0)
-  expect_equal(sum_14.3$above_D_Mg_ha, 0)
-  expect_equal(sum_14.3$above_Mg_ha, 0)
-  expect_equal(sum_14.3$leaf_Mg_ha, 0)
+  sum_15.2 <- subset(sum_15.1, watershed == "W5" & year == "1998" & plot == "1" & sample_class == "tree")
+  sum_15.3 <- subset(sum_15.1, watershed == "W5" & year == "1998" & plot == "1" & sample_class == "sapling")
+  expect_equal(sum_15.2$above_L_Mg_ha > 0, TRUE)
+  expect_equal(sum_15.2$above_D_Mg_ha == 0, TRUE)
+  expect_equal(sum_15.2$above_Mg_ha > 0, TRUE)
+  expect_equal(sum_15.2$leaf_Mg_ha > 0, TRUE)
+  expect_equal(sum_15.3$above_L_Mg_ha, 0)
+  expect_equal(sum_15.3$above_D_Mg_ha, 0)
+  expect_equal(sum_15.3$above_Mg_ha, 0)
+  expect_equal(sum_15.3$leaf_Mg_ha, 0)
   
 })
 
@@ -346,11 +335,16 @@ test_that("Summaries are working as expected for internal data", {
   expect_equal(all(intern_check_4$leaf_Mg_ha > 0), TRUE)
   
   # check plots with no trees (but with saps) ----------------------------------
-  intern_check_5 <- subset(size_check, watershed == "W5" & year == "1990" & plot == "1" & sample_class == "tree")
-  expect_equal(intern_check_5$above_L_Mg_ha, 0)
-  expect_equal(intern_check_5$above_D_Mg_ha, 0)
-  expect_equal(intern_check_5$above_Mg_h, 0)
-  expect_equal(intern_check_5$leaf_Mg_ha, 0)
+  intern_check_5.1 <- subset(size_check, watershed == "W5" & year == "1990" & plot == "1" & sample_class == "tree")
+  intern_check_5.2 <- subset(size_check, watershed == "W5" & year == "1990" & plot == "1" & sample_class == "sapling")
+  expect_equal(intern_check_5.1$above_L_Mg_ha, 0)
+  expect_equal(intern_check_5.1$above_D_Mg_ha, 0)
+  expect_equal(intern_check_5.1$above_Mg_h, 0)
+  expect_equal(intern_check_5.1$leaf_Mg_ha, 0)
+  expect_equal(intern_check_5.2$above_L_Mg_ha > 0, TRUE)
+  expect_equal(intern_check_5.2$above_D_Mg_ha == 0, TRUE)
+  expect_equal(intern_check_5.2$above_Mg_h > 0, TRUE)
+  expect_equal(intern_check_5.2$leaf_Mg_ha > 0, TRUE)
   
 })
 

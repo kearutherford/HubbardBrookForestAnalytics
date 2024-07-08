@@ -295,7 +295,7 @@ test_that("Filling in missing/incorect values is working as expected", {
   check_2.3 <- subset(check_2.1, species == "NONE")
   expect_equal(check_2.3$status, as.character(NA))
   
-  # missing vigor is given "4"
+  # dead tree with missing vigor is given "4"
   expect_warning(check_3.1 <- HBEFBiomass(data_type = "external", 
                                           external_data = bad_trees_35,
                                           results = "by_tree"))

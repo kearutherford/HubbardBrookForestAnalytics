@@ -463,5 +463,6 @@ globalVariables(c("a", "above_g", "b", "b1_ag", "b1_lf", "b2_ag", "b2_lf", "b3_a
     "species_fia", "spp_hgt", "status", "stump_bark_c", "stump_bark_kg", "stump_total_c",
     "stump_total_kg", "stump_wood_c", "stump_wood_kg", "top", "total_ag_c", "total_ag_kg",
     "total_bark_c", "total_bark_kg", "total_branch_c", "total_branch_kg",
-    "total_wood_c", "total_wood_kg", "vigor", "water_year_plot", "site", "species"))
+    "total_wood_c", "total_wood_kg", "vigor", "water_year_plot", "site", "species",
+    "above_kg", "elev_m", "exp_factor", "ht_cm", "leaf_kg", "watershed", "year"))
 
