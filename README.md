@@ -1,7 +1,7 @@
 
 # Hubbard Brook Forest Analytics
 
-The `HubbardBrookForestAnalytics` package (HBFA) …
+`HubbardBrookForestAnalytics` (HBFA) package overview coming soon …
 
 > :bulb: **Tip:** you can navigate this README file using the table of
 > contents found in the upper right-hand corner.
