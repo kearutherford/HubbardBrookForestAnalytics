@@ -11,21 +11,16 @@ PredictHeight <- function(data) {
   data$calc_ht <- ifelse(is.na(data$dbh_cm), "N", "Y")
   
   # merge coefficient dataframe
-  data2 <- merge(data, hgt_coefs, by = c("species", "sample_class"), all.x = TRUE, all.y = FALSE)
+  data2 <- merge(data, hgt_coefs, by = "species", all.x = TRUE, all.y = FALSE)
   
   # estimate heights (in meters)
-  data2$ht_m <- ifelse(data2$eqn == "s" & data2$calc_ht == "Y", ((10+(data2$c*data$elev_m))+(data2$a*(1-exp(-data2$b*data2$dbh_cm)))),
-                       ifelse(data2$eqn == "cr" & data2$calc_ht == "Y", ((data2$a+(data2$d*data2$elev_m))*(1-exp(-data2$b*data2$dbh_cm))^data2$c),
-                       ifelse(data2$eqn == "lm" & data2$calc_ht == "Y", (data2$a+(data2$b*data2$dbh_cm)+(data2$c*data2$elev_m)),
-                       ifelse(data2$eqn == "lm0" & data2$calc_ht == "Y", (1.37+data2$a+(data2$b*data2$dbh_cm)),
-                       ifelse(data2$eqn == "cr1" & data2$calc_ht == "Y", ((data2$a+(data2$d*data2$elev_high)+(data2$e*data2$elev_mid))*(1-exp(-data2$b*data2$dbh_cm))^data2$c),
-                       ifelse(data2$eqn == "cr0" & data2$calc_ht == "Y", (data2$a*(1-exp(-data2$b*data2$dbh_cm))^data2$c),
-                       ifelse(data2$eqn == "s1" & data2$calc_ht == "Y", ((1.37+(data2$c*data2$elev_high)+(data2$d*data2$elev_mid))+(data2$a*(1-exp(-data2$b*data2$dbh_cm)))), NA)))))))
+  data2$ht_m <- ifelse(data2$eqn == "s" & data2$calc_ht == "Y", (1.37+(data2$a+(data2$d*data2$elev_m)+(data2$e*data2$hli)+(data2$f*data2$steep_deg))*(1-exp(-data2$b*data2$dbh_cm))),
+                       ifelse(data2$eqn == "cr" & data2$calc_ht == "Y", (1.37+(data2$a+(data2$d*data2$elev_m)+(data2$e*data2$hli)+(data2$f*data2$steep_deg))*(1-exp(-data2$b*data2$dbh_cm))^data2$c), NA))
   
   # convert ht from m to cm
   data2$ht_cm <- data2$ht_m*100
 
-  return_df <- subset(data2, select = -c(calc_ht, spp_hgt, a, b, c, d, e, eqn, ht_m, elev_mid, elev_high))
+  return_df <- subset(data2, select = -c(calc_ht, spp_hgt, a, b, c, d, e, f, eqn, ht_m))
   return(return_df)
   
 }
@@ -157,8 +152,8 @@ PredictBiomass <- function(data) {
   
   # re-order columns
   # this approach allows flexibility for which additional columns are included in the dataframe 
-  name_vec1 <- c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "sample_class")
-  name_vec2 <- colnames(subset(merged_df, select = -c(watershed, year, plot, elev_m, exp_factor, species, status, vigor, dbh_cm, ht_cm, above_kg, leaf_kg, sample_class)))
+  name_vec1 <- c("watershed", "year", "plot", "elev_m", "hli", "steep_deg", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "sample_class")
+  name_vec2 <- colnames(subset(merged_df, select = -c(watershed, year, plot, elev_m, hli, steep_deg, exp_factor, species, status, vigor, dbh_cm, ht_cm, above_kg, leaf_kg, sample_class)))
   return_df <- subset(merged_df, select = c(name_vec1, name_vec2))
   return_df <- return_df[order(return_df$watershed, return_df$year, return_df$plot), ]
   

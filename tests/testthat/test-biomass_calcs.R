@@ -4,12 +4,12 @@ test_that("Dataframes have expected column names", {
   expect_named(HBEFBiomass(data_type = "external", 
                            external_data = good_trees_1,
                            results = "by_tree"),
-               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg"))
+               c("watershed", "year", "plot", "elev_m", "hli", "steep_deg", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg"))
   
   expect_named(HBEFBiomass(data_type = "external", 
                            external_data = good_trees_2,
                            results = "by_tree"),
-               c("watershed", "year", "plot", "elev_m", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "cbh_m", "forest_type"))
+               c("watershed", "year", "plot", "elev_m", "hli", "steep_deg", "exp_factor", "species", "status", "vigor", "dbh_cm", "ht_cm", "above_kg", "leaf_kg", "cbh_m", "forest_type"))
   
   expect_named(HBEFBiomass(data_type = "external", 
                            external_data = good_trees_1,

@@ -5,12 +5,14 @@
 \alias{external_demo_data}
 \title{Data for biomass demonstrations}
 \format{
-A dataframe with 9 rows and 7 columns:
+A dataframe with 15 rows and 12 columns:
 \describe{
 \item{watershed}{Whatershed in which the data were collected}
 \item{year}{Year in which the data were collected}
-\item{plot}{Plot in which the individual tree was measured.}
+\item{plot}{Plot in which the individual tree was measured}
 \item{elev_m}{Elevation in meters above sea level}
+\item{hli}{Heat load index}
+\item{steep_deg}{Slope in degrees}
 \item{exp_factor}{Expansion factor, number of trees per hectare that a given plot tree represents}
 \item{species}{Species of the individual tree, using four-letter species codes}
 \item{status}{Live or Dead}

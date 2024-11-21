@@ -119,6 +119,14 @@ ValidateExternal <- function(ext_data_val) {
     stop('Input data is missing the necessary "elev_m" column.')
   }
   
+  if(!("hli" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "hli" column.')
+  }
+  
+  if(!("steep_deg" %in% colnames(data_val))) {
+    stop('Input data is missing the necessary "steep_deg" column.')
+  }
+  
   if(!("exp_factor" %in% colnames(data_val))) {
     stop('Input data is missing the necessary "exp_factor" column.')
   }
@@ -179,6 +187,16 @@ ValidateExternal <- function(ext_data_val) {
   if(!is.numeric(data_val$elev_m)) {
     stop('"elev_m" must be a numerical variable.\n',
          'You have input a variable of class: ', class(data_val$elev_m))
+  }
+  
+  if(!is.numeric(data_val$hli)) {
+    stop('"hli" must be a numerical variable.\n',
+         'You have input a variable of class: ', class(data_val$hli))
+  }
+  
+  if(!is.numeric(data_val$steep_deg)) {
+    stop('"steep_deg" must be a numerical variable.\n',
+         'You have input a variable of class: ', class(data_val$steep_deg))
   }
   
   if(!is.numeric(data_val$exp_factor)) {
@@ -438,8 +456,6 @@ ValidateExternal <- function(ext_data_val) {
   
   # add necessary columns for future calculations 
   data_val$sample_class <- ifelse(is.na(data_val$dbh_cm), "unk", ifelse(data_val$dbh_cm < 10, "sapling", "tree"))
-  data_val$elev_mid <- ifelse(data_val$elev_m >= 630 & data_val$elev_m <= 700, 1, 0)
-  data_val$elev_high <- ifelse(data_val$elev_m > 700, 1, 0)
   
   # fill in certain missing/incorrect values
   data_val$species <- ifelse(is.na(data_val$species), "UNKN", data_val$species)
@@ -456,7 +472,7 @@ ValidateExternal <- function(ext_data_val) {
 
 
 globalVariables(c("a", "above_g", "b", "b1_ag", "b1_lf", "b2_ag", "b2_lf", "b3_ag", "b3_lf", "calc_bio", "calc_ht",
-    "crown_ratio", "cull", "d", "dbh_cm", "decay_class", "division", "e", "elev_high", "elev_mid",
+    "crown_ratio", "cull", "d", "dbh_cm", "decay_class", "division", "e",
     "eqn", "eqn_ag", "eqn_lf", "foliage_c", "ht1_m", "ht2_m", "ht_m", "leaf_g", "merch_bark_c",
     "merch_bark_kg", "merch_top_c", "merch_top_kg", "merch_total_c", "merch_total_kg",
     "merch_wood_c", "merch_wood_kg", "province", "sample_class", "site species",
@@ -464,5 +480,5 @@ globalVariables(c("a", "above_g", "b", "b1_ag", "b1_lf", "b2_ag", "b2_lf", "b3_a
     "stump_total_kg", "stump_wood_c", "stump_wood_kg", "top", "total_ag_c", "total_ag_kg",
     "total_bark_c", "total_bark_kg", "total_branch_c", "total_branch_kg",
     "total_wood_c", "total_wood_kg", "vigor", "water_year_plot", "site", "species",
-    "above_kg", "elev_m", "exp_factor", "ht_cm", "leaf_kg", "watershed", "year"))
+    "above_kg", "elev_m", "exp_factor", "ht_cm", "leaf_kg", "watershed", "year","f","hli","steep_deg"))
 
