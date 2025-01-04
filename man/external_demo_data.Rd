@@ -11,8 +11,8 @@ A dataframe with 15 rows and 12 columns:
 \item{year}{Year in which the data were collected}
 \item{plot}{Plot in which the individual tree was measured}
 \item{elev_m}{Elevation in meters above sea level}
-\item{hli}{Heat load index}
-\item{steep_deg}{Slope in degrees}
+\item{hli}{Heat Load Index}
+\item{steep_deg}{Sleepness in degrees}
 \item{exp_factor}{Expansion factor, number of trees per hectare that a given plot tree represents}
 \item{species}{Species of the individual tree, using four-letter species codes}
 \item{status}{Live or Dead}

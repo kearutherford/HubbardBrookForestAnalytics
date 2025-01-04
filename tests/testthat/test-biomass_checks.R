@@ -76,6 +76,16 @@ test_that("Missing columns throw an error", {
                            results = "by_plot"),
                'Input data is missing the necessary "dbh_cm" column.')
   
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_42,
+                           results = "by_plot"),
+               'Input data is missing the necessary "hli" column.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_43,
+                           results = "by_plot"),
+               'Input data is missing the necessary "steep_deg" column.')
+  
 })
 
 
@@ -125,6 +135,16 @@ test_that("Column class handling works", {
                            external_data = bad_trees_18,
                            results = "by_plot"),
                '"dbh_cm" must be a numerical variable.\nYou have input a variable of class: character')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_44,
+                           results = "by_plot"),
+               '"hli" must be a numerical variable.\nYou have input a variable of class: character')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_45,
+                           results = "by_plot"),
+               '"steep_deg" must be a numerical variable.\nYou have input a variable of class: character')
   
 })
 
@@ -270,6 +290,56 @@ test_that("DBH handling works", {
                            external_data = bad_trees_39,
                            results = "by_plot"),
                'There are DBH values < 2 in the provided dataframe. All DBH values must be >= 2 cm.')
+  
+})
+
+
+test_that("HLI handling works", {
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_46,
+                           results = "by_plot"),
+               'There are missing Heat Load Index - hli - values in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_47,
+                           results = "by_plot"),
+               'Heat Load Index - hli - values must be between -2.7 and 0.6. There are hli values outside of this range in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_48,
+                           results = "by_plot"),
+               'Heat Load Index - hli - values must be between -2.7 and 0.6. There are hli values outside of this range in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_49,
+                           results = "by_plot"),
+               'Each watershed:year:plot should have the same Heat Load Index - hli - recorded.\nThe following watershed:year:plot combinations have multiple hli values: W5_1998_1   W5_1998_2')
+  
+})
+
+
+test_that("Steepness handling works", {
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_50,
+                           results = "by_plot"),
+               'There are missing steepness values in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_51,
+                           results = "by_plot"),
+               'Steepness must be in degrees. Values must be between 0 and 90. There are steepness values outside of this range in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_52,
+                           results = "by_plot"),
+               'Steepness must be in degrees. Values must be between 0 and 90. There are steepness values outside of this range in the provided dataframe.')
+  
+  expect_error(HBEFBiomass(data_type = "external", 
+                           external_data = bad_trees_53,
+                           results = "by_plot"),
+               'Each watershed:year:plot should have the same steepness recorded.\nThe following watershed:year:plot combinations have multiple steepness values: W5_1998_1   W5_1998_2')
   
 })
 

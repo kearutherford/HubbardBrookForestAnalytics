@@ -15,8 +15,8 @@
 #'   \item{year}{Year in which the data were collected}
 #'   \item{plot}{Plot in which the individual tree was measured}
 #'   \item{elev_m}{Elevation in meters above sea level}
-#'   \item{hli}{Heat load index}
-#'   \item{steep_deg}{Slope in degrees}
+#'   \item{hli}{Heat Load Index}
+#'   \item{steep_deg}{Sleepness in degrees}
 #'   \item{exp_factor}{Expansion factor, number of trees per hectare that a given plot tree represents}
 #'   \item{species}{Species of the individual tree, using four-letter species codes}
 #'   \item{status}{Live or Dead}
@@ -654,7 +654,171 @@ bad_trees_41 <- data.frame(
   dbh_cm = c(13.4,NA,19.8,NA,15.5,13.6,3.4,4.5,9.8,20.2,15.5,13.6,12.5,11.9,NA)
 )
 
+bad_trees_42 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  #hli = -0.5,
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
 
+bad_trees_43 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  #steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
 
+bad_trees_44 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = "0.5", # wrong class
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
 
+bad_trees_45 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  steep_deg = "15", # wrong class
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_46 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = c(NA,NA,NA,-0.5,-0.5,-0.5,0.1,0.1,0.1,-0.5,-0.5,-0.5,0.3,0.3,-2),
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_47 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = c(0.8,0.8,0.8,-0.5,-0.5,-0.5,0.1,0.1,0.1,-0.5,-0.5,-0.5,0.3,0.3,-2),
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_48 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = c(-3,-3,-3,-0.5,-0.5,-0.5,0.1,0.1,0.1,-0.5,-0.5,-0.5,0.3,0.3,-2),
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_49 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = c(0.1,0.2,0.1,-0.5,-0.7,-0.5,0.1,0.1,0.1,-0.5,-0.5,-0.5,0.3,0.3,-2),
+  steep_deg = 15,
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_50 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  steep_deg = c(NA,NA,NA,20,20,20,15,15,15,20,20,20,5,5,7),
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_51 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  steep_deg = c(100,100,100,20,20,20,15,15,15,20,20,20,5,5,7),
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_52 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  steep_deg = c(-15,-15,-15,20,20,20,15,15,15,20,20,20,5,5,7),
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
+
+bad_trees_53 <- data.frame(
+  watershed = c("W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W5","W6","W6","W6"),
+  year = as.character(c(1998,1998,1998,1998,1998,1998,2002,2002,2002,2002,2002,2002,1997,1997,1997)),
+  plot = as.character(c(1,1,1,2,2,2,1,1,1,2,2,2,1,1,2)),
+  elev_m = c(500,500,500,650,650,650,500,500,500,650,650,650,750,750,550),
+  hli = -0.5,
+  steep_deg = c(15,17,15,20,30,20,15,15,15,20,20,20,5,5,7),
+  exp_factor = 50,
+  species = c("BEPA","PIST","FAGR","ACPE","SASP","BEAL","BEPA","PIST","FAGR","ACPE","SASP","BEAL","FAGR","FAGR","NONE"),
+  status = c("Live","Live","Live","Dead","Live","Live", "Live","Dead","Live","Dead","Dead","Dead","Dead","Dead",NA),
+  vigor = as.character(c(1,2,1,4,1,1,1,4,1,5,4,5,4,4,NA)),
+  dbh_cm = c(3.4,14.5,10.8,20.2,5.5,13.6,3.4,14.5,10.8,20.2,5.5,13.6,12.5,11.9,NA)
+)
 

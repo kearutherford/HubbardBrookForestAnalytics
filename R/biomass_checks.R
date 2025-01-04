@@ -11,7 +11,7 @@
 #' Estimates aboveground tree biomass using localized equations. See \href{https://github.com/kearutherford/HubbardBrookForestAnalytics}{README} for details.
 #'
 #' @param data_type Specifies whether the data of interest are internal to the package (meaning the clean, archived tree data from Hubbard Brook Experimental Forest for all watersheds, plots, and years) or external to the package (meaning data provided by the user). Must be set to "internal" or "external". The default is set to "internal".
-#' @param external_data Only required if data_type is set to "external." A dataframe or tibble with the following columns: watershed, year, plot, elev_m, exp_factor, species, status, vigor, and dbh_cm. A forest_type column is optional. Each row must be an observation of an individual tree.
+#' @param external_data Only required if data_type is set to "external." A dataframe or tibble with the following columns: watershed, year, plot, elev_m, hli, steep_deg, exp_factor, species, status, vigor, and dbh_cm. A forest_type column is optional. Each row must be an observation of an individual tree.
 #' @param results Specifies whether the results will be summarized by tree, by plot, or by plot as well as size class (size class has two categories: (1) tree, DBH >= 10 cm and (2) sapling, DBH < 10 cm). Must be set to either "by_tree", "by_plot", or "by_size". The default is set to "by_plot". 
 #'
 #' @return Depends on the results setting:
@@ -227,65 +227,14 @@ ValidateExternal <- function(ext_data_val) {
   }
   
   
-  ##########################################################
-  # Check that expansion factor is as expected
-  ##########################################################
-  
-  # Check for NA ---------------------------------------------------------------
-  if ('TRUE' %in% is.na(data_val$exp_factor)) {
-    stop('There are missing expansion factors in the provided dataframe.')
-  }
-  
-  # Check for negative ef ------------------------------------------------------
-  if (min(data_val$exp_factor) < 0) {
-    stop('There are negative expansion factors in the provided dataframe. All expansion factors must be >= 0.')
-  }
-  
-  
-  ###########################################################
-  # Check elevation 
-  ###########################################################
-  
-  # Check for NA ---------------------------------------------------------------
-  if ('TRUE' %in% is.na(data_val$elev_m)) {
-    stop('There are missing elevations in the provided dataframe.')
-  }
-  
-  # Check for negative elev ----------------------------------------------------
-  if (min(data_val$elev_m, na.rm = TRUE) < 0) {
-    stop('There are negative elevations in the provided dataframe. All elevation values must be >= 0.')
-  }
-  
-  # Check for matching elevations within a plot --------------------------------
-  data_val$water_year_plot <- paste(data_val$watershed, data_val$year, data_val$plot, sep = "_")
-  unq_ids <- unique(data_val$water_year_plot)
-  elev_check_vec <- c()
-  
-  for(u in unq_ids) {
-    
-    all_trees <- subset(data_val, water_year_plot == u)
-    
-    if(length(unique(all_trees$elev_m)) != 1) {
-      elev_check_vec <- c(elev_check_vec, u)
-    }
-    
-  }
-  
-  if(length(elev_check_vec) > 0) {
-    
-    elev_check <- paste0(elev_check_vec, sep = "   ")
-    
-    stop('Each watershed:year:plot should have the same elevation recorded.\n',
-         'The following watershed:year:plot combinations have multiple elev_m values: ', elev_check)
-    
-  }
-  
-  
   ###########################################################
   # Check forest type (if in dataframe)
   ###########################################################
   
   # Check for matching forest type within a plot -------------------------------
+  data_val$water_year_plot <- paste(data_val$watershed, data_val$year, data_val$plot, sep = "_")
+  unq_ids <- unique(data_val$water_year_plot)
+  
   if("forest_type" %in% colnames(data_val)) {
     
     for_check_vec <- c()
@@ -309,6 +258,132 @@ ValidateExternal <- function(ext_data_val) {
       
     }
     
+  }
+  
+  
+  ###########################################################
+  # Check elevation 
+  ###########################################################
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(data_val$elev_m)) {
+    stop('There are missing elevations in the provided dataframe.')
+  }
+  
+  # Check for negative elev ----------------------------------------------------
+  if (min(data_val$elev_m, na.rm = TRUE) < 0) {
+    stop('There are negative elevations in the provided dataframe. All elevation values must be >= 0.')
+  }
+  
+  # Check for matching elevations within a plot --------------------------------
+  elev_check_vec <- c()
+  
+  for(u in unq_ids) {
+    
+    all_trees <- subset(data_val, water_year_plot == u)
+    
+    if(length(unique(all_trees$elev_m)) != 1) {
+      elev_check_vec <- c(elev_check_vec, u)
+    }
+    
+  }
+  
+  if(length(elev_check_vec) > 0) {
+    
+    elev_check <- paste0(elev_check_vec, sep = "   ")
+    
+    stop('Each watershed:year:plot should have the same elevation recorded.\n',
+         'The following watershed:year:plot combinations have multiple elev_m values: ', elev_check)
+    
+  }
+
+  
+  ###########################################################
+  # Check hli 
+  ###########################################################
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(data_val$hli)) {
+    stop('There are missing Heat Load Index - hli - values in the provided dataframe.')
+  }
+  
+  # Check for values outside hli range -----------------------------------------
+  if (min(data_val$hli, na.rm = TRUE) < -2.7 | max(data_val$hli, na.rm = TRUE) > 0.6) {
+    stop('Heat Load Index - hli - values must be between -2.7 and 0.6. There are hli values outside of this range in the provided dataframe.')
+  }
+  
+  # Check for matching hli within a plot ---------------------------------------
+  hli_check_vec <- c()
+  
+  for(u in unq_ids) {
+    
+    all_trees <- subset(data_val, water_year_plot == u)
+    
+    if(length(unique(all_trees$hli)) != 1) {
+      hli_check_vec <- c(hli_check_vec, u)
+    }
+    
+  }
+  
+  if(length(hli_check_vec) > 0) {
+    
+    hli_check <- paste0(hli_check_vec, sep = "   ")
+    
+    stop('Each watershed:year:plot should have the same Heat Load Index - hli - recorded.\n',
+         'The following watershed:year:plot combinations have multiple hli values: ', hli_check)
+    
+  }
+  
+  
+  ###########################################################
+  # Check steep_deg
+  ###########################################################
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(data_val$steep_deg)) {
+    stop('There are missing steepness values in the provided dataframe.')
+  }
+  
+  # Check for values outside steepness range -----------------------------------
+  if (min(data_val$steep_deg, na.rm = TRUE) < 0 | max(data_val$steep_deg, na.rm = TRUE) > 90) {
+    stop('Steepness must be in degrees. Values must be between 0 and 90. There are steepness values outside of this range in the provided dataframe.')
+  }
+  
+  # Check for matching steepness within a plot ---------------------------------
+  steep_check_vec <- c()
+  
+  for(u in unq_ids) {
+    
+    all_trees <- subset(data_val, water_year_plot == u)
+    
+    if(length(unique(all_trees$steep_deg)) != 1) {
+      steep_check_vec <- c(steep_check_vec, u)
+    }
+    
+  }
+  
+  if(length(steep_check_vec) > 0) {
+    
+    steep_check <- paste0(steep_check_vec, sep = "   ")
+    
+    stop('Each watershed:year:plot should have the same steepness recorded.\n',
+         'The following watershed:year:plot combinations have multiple steepness values: ', steep_check)
+    
+  }
+  
+  
+  ##########################################################
+  # Check that expansion factor is as expected
+  ##########################################################
+  
+  # Check for NA ---------------------------------------------------------------
+  if ('TRUE' %in% is.na(data_val$exp_factor)) {
+    stop('There are missing expansion factors in the provided dataframe.')
+  }
+  
+  # Check for negative ef ------------------------------------------------------
+  if (min(data_val$exp_factor) < 0) {
+    stop('There are negative expansion factors in the provided dataframe. All expansion factors must be >= 0.')
   }
   
   
@@ -364,6 +439,7 @@ ValidateExternal <- function(ext_data_val) {
          'and NA status, vigor and/or dbh_cm.')
     
   }
+  
   
   ###########################################################
   # Check that status is as expected

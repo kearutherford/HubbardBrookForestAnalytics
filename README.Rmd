@@ -64,6 +64,10 @@ The `HBEFBiomass` function uses localized equations to estimate aboveground tree
     * **forest_type:** This column is OPTIONAL. If included, must be a character variable. Identifies the type of forest where the plot is located (for Hubbard Brook Experimental Forest, forest type would be either northern hardwood or spruce-fir).
         
     * **elev_m:** Must be a numeric variable. Elevation in meters above sea level for the plot. 
+    
+    * **hli:** Must be a numeric variable. Heat Load Index for the plot. Must be a value between -2.7 and 0.6.
+    
+    * **steep_deg:** Must be a numeric variable. Steepness (or slope) in degrees for the plot. Must be a value between 0 and 90.
             
     * **exp_factor:** Must be a numeric variable. The expansion factor specifies the number of trees per hectare that a given plot tree represents. 
     
@@ -77,7 +81,7 @@ The `HBEFBiomass` function uses localized equations to estimate aboveground tree
 
 3. `results` Specifies whether the results will be summarized by tree, by plot, or by plot as well as size class (size class has two categories: (1) tree, DBH >= 10 cm and (2) sapling, DBH < 10 cm). Must be set to either "by_tree", "by_plot", or "by_size". The default is set to "by_plot".
 
-*Note: For plots without trees, species should be set to NONE. Watershed, year, plot, elev_m, and exp_factor columns shoudl be filled in as appropriate. And all tree-level variables (status, vigor, dbh_cm) should be NA.*
+*Note: For plots without trees, species should be set to NONE. Watershed, year, plot, elev_m, and exp_factor columns should be filled in as appropriate. And all tree-level variables (status, vigor, dbh_cm) should be NA.*
 
 ### Outputs
 
@@ -166,7 +170,7 @@ head(internal_demo_3)
 
 **Step 1: Predict tree heights**
 
-We fit new equations to predict height based on species, DBH, and elevation. These equations were fit using valley-wide height samples. 
+We fit new equations to predict height based on species, DBH, elevation, Heat Load Index, and steepness. These equations were fit using valley-wide height samples. 
 
 <br>
 

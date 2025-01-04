@@ -31,14 +31,14 @@ citation("HubbardBrookForestAnalytics")
     ## To cite package 'HubbardBrookForestAnalytics' in publications use:
     ## 
     ##   Kea Rutherford, John Battles (2024). _HubbardBrookForestAnalytics,
-    ##   version 1.0.0_. Battles Lab: Forest Ecology and Ecosystem Dynamics,
+    ##   version 2.0.0_. Battles Lab: Forest Ecology and Ecosystem Dynamics,
     ##   University of California, Berkeley.
     ##   <https://github.com/kearutherford/HubbardBrookForestAnalytics>.
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
     ##   @Manual{,
-    ##     title = {HubbardBrookForestAnalytics, version 1.0.0},
+    ##     title = {HubbardBrookForestAnalytics, version 2.0.0},
     ##     author = {{Kea Rutherford} and {John Battles}},
     ##     organization = {Battles Lab: Forest Ecology and Ecosystem Dynamics, University of California, Berkeley},
     ##     year = {2024},
@@ -108,6 +108,12 @@ estimations” below for further details.
     - **elev_m:** Must be a numeric variable. Elevation in meters above
       sea level for the plot.
 
+    - **hli:** Must be a numeric variable. Heat Load Index for the plot.
+      Must be a value between -2.7 and 0.6.
+
+    - **steep_deg:** Must be a numeric variable. Steepness (or slope) in
+      degrees for the plot. Must be a value between 0 and 90.
+
     - **exp_factor:** Must be a numeric variable. The expansion factor
       specifies the number of trees per hectare that a given plot tree
       represents.
@@ -135,7 +141,7 @@ estimations” below for further details.
     default is set to “by_plot”.
 
 *Note: For plots without trees, species should be set to NONE.
-Watershed, year, plot, elev_m, and exp_factor columns shoudl be filled
+Watershed, year, plot, elev_m, and exp_factor columns should be filled
 in as appropriate. And all tree-level variables (status, vigor, dbh_cm)
 should be NA.*
 
@@ -182,27 +188,27 @@ internal_demo_1 <- HBEFBiomass(data_type = "internal",
 head(internal_demo_1)
 ```
 
-    ##       watershed year plot elev_m exp_factor species status vigor dbh_cm
-    ## 5135         W1 1996    1  738.2    16.0000    ABBA   Live     0   15.1
-    ## 5505         W1 1996    1  738.2    16.0000    ABBA   Live     0   15.2
-    ## 12276        W1 1996    1  738.2   133.3333    ACPE   Live     0    2.1
-    ## 15972        W1 1996    1  738.2   133.3333    ACRU   Dead     4    2.9
-    ## 16188        W1 1996    1  738.2   133.3333    ACRU   Live     3    2.7
-    ## 30016        W1 1996    1  738.2    16.0000    ACSA   Live     0   15.8
-    ##           ht_cm    above_kg    leaf_kg  bbd canopy elev_band       forest_type
-    ## 5135  1015.8031  50.3670779 8.90393220 <NA>   <NA>         H northern_hardwood
-    ## 5505  1020.5396  51.2207335 9.03074010 <NA>   <NA>         H northern_hardwood
-    ## 12276  370.5838   0.7164254 0.06835573 <NA>   <NA>         H northern_hardwood
-    ## 15972  508.4580   1.3420485 0.00000000 <NA>   <NA>         H northern_hardwood
-    ## 16188  489.3990   1.5604984 0.19094001 <NA>   <NA>         H northern_hardwood
-    ## 30016 1434.0221 114.9590707 2.64563667 <NA>   <NA>         H northern_hardwood
-    ##       plot_area_ha
-    ## 5135        0.0625
-    ## 5505        0.0625
-    ## 12276       0.0075
-    ## 15972       0.0075
-    ## 16188       0.0075
-    ## 30016       0.0625
+    ##       watershed year plot elev_m        hli steep_deg exp_factor species status
+    ## 4341         W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ABBA   Live
+    ## 7622         W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ABBA   Live
+    ## 14040        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACPE   Live
+    ## 16074        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACRU   Dead
+    ## 16119        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACRU   Live
+    ## 36828        W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ACSA   Live
+    ##       vigor dbh_cm     ht_cm    above_kg    leaf_kg  bbd canopy elev_band
+    ## 4341      0   15.1 1045.6302  51.5228324 8.50316916 <NA>   <NA>         H
+    ## 7622      0   15.2 1050.6358  52.4011600 8.62257122 <NA>   <NA>         H
+    ## 14040     0    2.1  375.9601   0.7164254 0.06835573 <NA>   <NA>         H
+    ## 16074     4    2.9  504.9463   1.3932184 0.00000000 <NA>   <NA>         H
+    ## 16119     3    2.7  481.7714   1.6182775 0.19173872 <NA>   <NA>         H
+    ## 36828     0   15.8 1534.4349 115.6670692 2.91970226 <NA>   <NA>         H
+    ##       forest_type plot_area_ha
+    ## 4341   spruce-fir       0.0625
+    ## 7622   spruce-fir       0.0625
+    ## 14040  spruce-fir       0.0075
+    ## 16074  spruce-fir       0.0075
+    ## 16119  spruce-fir       0.0075
+    ## 36828  spruce-fir       0.0625
 
 *Notice in the output dataframe: The `bbd`, `canopy`, `elev_band`,
 `forest_type`, and `plot_area_ha` columns, which are additional (not
@@ -219,22 +225,38 @@ will remain in the output dataframe.*
 external_demo_data
 ```
 
-    ##    watershed year plot elev_m exp_factor species status vigor dbh_cm cbh_m
-    ## 1         W5 1998    1    500         50    BEPA   Live     1    3.4   0.3
-    ## 2         W5 1998    1    500         50    PIST   Live     2   14.5   1.4
-    ## 3         W5 1998    1    500         50    FAGR   Live     1   10.8   1.8
-    ## 4         W5 1998    2    650         50    ACPE   Dead     4   20.2   2.2
-    ## 5         W5 1998    2    650         50    SASP   Live     3    5.5   1.5
-    ## 6         W5 1998    2    650         50    BEAL   Dead     5   13.6   1.6
-    ## 7         W5 2002    1    500         50    BEPA   Live     1    3.4   1.4
-    ## 8         W5 2002    1    500         50    PIST   Dead     4   14.5   0.5
-    ## 9         W5 2002    1    500         50    FAGR   Live     1   10.8   0.8
-    ## 10        W5 2002    2    650         50    ACPE   Dead     5   20.2   0.2
-    ## 11        W5 2002    2    650         50    SASP   Dead     4    5.5   0.5
-    ## 12        W5 2002    2    650         50    BEAL   Dead     5   13.6   3.6
-    ## 13        W6 1997    1    750         50    FAGR   Dead     4   12.5   1.5
-    ## 14        W6 1997    1    750         50    FAGR   Dead     4   11.9   1.9
-    ## 15        W6 1997    2    550         50    NONE   <NA>  <NA>     NA    NA
+    ##    watershed year plot elev_m  hli steep_deg exp_factor species status vigor
+    ## 1         W5 1998    1    500 -0.5        15         50    BEPA   Live     1
+    ## 2         W5 1998    1    500 -0.5        15         50    PIST   Live     2
+    ## 3         W5 1998    1    500 -0.5        15         50    FAGR   Live     1
+    ## 4         W5 1998    2    650 -0.7        20         50    ACPE   Dead     4
+    ## 5         W5 1998    2    650 -0.7        20         50    SASP   Live     3
+    ## 6         W5 1998    2    650 -0.7        20         50    BEAL   Dead     5
+    ## 7         W5 2002    1    500 -0.5        15         50    BEPA   Live     1
+    ## 8         W5 2002    1    500 -0.5        15         50    PIST   Dead     4
+    ## 9         W5 2002    1    500 -0.5        15         50    FAGR   Live     1
+    ## 10        W5 2002    2    650 -0.7        20         50    ACPE   Dead     5
+    ## 11        W5 2002    2    650 -0.7        20         50    SASP   Dead     4
+    ## 12        W5 2002    2    650 -0.7        20         50    BEAL   Dead     5
+    ## 13        W6 1997    1    750 -1.0        30         50    FAGR   Dead     4
+    ## 14        W6 1997    1    750 -1.0        30         50    FAGR   Dead     4
+    ## 15        W6 1997    2    550 -0.2        10         50    NONE   <NA>  <NA>
+    ##    dbh_cm cbh_m
+    ## 1     3.4   0.3
+    ## 2    14.5   1.4
+    ## 3    10.8   1.8
+    ## 4    20.2   2.2
+    ## 5     5.5   1.5
+    ## 6    13.6   1.6
+    ## 7     3.4   1.4
+    ## 8    14.5   0.5
+    ## 9    10.8   0.8
+    ## 10   20.2   0.2
+    ## 11    5.5   0.5
+    ## 12   13.6   3.6
+    ## 13   12.5   1.5
+    ## 14   11.9   1.9
+    ## 15     NA    NA
 
 *Notice in the input dataframe: The plot without trees (W6, 1997, plot
 2) is represented by species = “NONE”. Watershed, year, plot, elev_m,
@@ -253,11 +275,11 @@ internal_demo_2
 ```
 
     ##   watershed year plot elev_m above_L_Mg_ha above_D_Mg_ha above_Mg_ha leaf_Mg_ha
-    ## 1        W5 1998    1    500       5.01370       0.00000     5.01370    0.10982
-    ## 2        W5 1998    2    650       0.24062       8.15022     8.39084    0.01626
-    ## 3        W5 2002    1    500       2.21491       2.28540     4.50031    0.06926
-    ## 4        W5 2002    2    650       0.00000       7.00306     7.00306    0.00000
-    ## 5        W6 1997    1    750       0.00000       4.15763     4.15763    0.00000
+    ## 1        W5 1998    1    500       5.40888       0.00000     5.40888    0.11372
+    ## 2        W5 1998    2    650       0.25206       8.15022     8.40228    0.01574
+    ## 3        W5 2002    1    500       2.46437       2.14448     4.60885    0.07316
+    ## 4        W5 2002    2    650       0.00000       7.01139     7.01139    0.00000
+    ## 5        W6 1997    1    750       0.00000       4.47166     4.47166    0.00000
     ## 6        W6 1997    2    550       0.00000       0.00000     0.00000    0.00000
 
 *Notice in the output dataframe: The plot without trees (W6, 1997, plot
@@ -276,19 +298,19 @@ head(internal_demo_3)
 ```
 
     ##   watershed year plot       forest_type elev_m sample_class above_L_Mg_ha
-    ## 1        W1 1996    1 northern_hardwood  738.2      sapling       0.39577
-    ## 2        W1 1996    1 northern_hardwood  738.2         tree     119.65839
-    ## 3        W1 1996   10 northern_hardwood  738.9      sapling       9.45333
-    ## 4        W1 1996   10 northern_hardwood  738.9         tree     167.41554
-    ## 5        W1 1996  100 northern_hardwood  622.7      sapling       5.04163
-    ## 6        W1 1996  100 northern_hardwood  622.7         tree     144.35868
+    ## 1        W1 1996    1        spruce-fir  738.2      sapling       0.38201
+    ## 2        W1 1996    1        spruce-fir  738.2         tree     110.26162
+    ## 3        W1 1996   10 northern_hardwood  738.9      sapling      11.03994
+    ## 4        W1 1996   10 northern_hardwood  738.9         tree     154.74468
+    ## 5        W1 1996  100 northern_hardwood  622.7      sapling       5.72583
+    ## 6        W1 1996  100 northern_hardwood  622.7         tree     145.68833
     ##   above_D_Mg_ha above_Mg_ha leaf_Mg_ha
-    ## 1       0.17894     0.57471    0.03752
-    ## 2      46.91576   166.57415    3.00160
-    ## 3       0.14781     9.60114    0.41259
-    ## 4       4.22469   171.64023    3.60931
-    ## 5       0.00000     5.04163    0.19035
-    ## 6      22.03557   166.39425    2.45552
+    ## 1       0.18576     0.56777    0.03616
+    ## 2      47.10919   157.37081    3.07775
+    ## 3       0.20946    11.24940    0.51896
+    ## 4       4.23677   158.98145    3.66743
+    ## 5       0.00000     5.72583    0.24460
+    ## 6      22.02775   167.71608    2.35344
 
 *Notice in the output dataframe: Since forest_type is included in the
 internal data, it is carried through into the summarized output data.
@@ -304,8 +326,9 @@ output data.*
 
 **Step 1: Predict tree heights**
 
-We fit new equations to predict height based on species, DBH, and
-elevation. These equations were fit using valley-wide height samples.
+We fit new equations to predict height based on species, DBH, elevation,
+Heat Load Index, and steepness. These equations were fit using
+valley-wide height samples.
 
 <br>
 
