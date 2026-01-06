@@ -5,7 +5,7 @@ output:
 
 # Hubbard Brook Forest Analytics 
 
-The `HubbardBrookForestAnalytics` package (HBFA) facilitates easy access and consistent application of the revised Hubbard Brook Experimental Forest tree biomass equations. Details on the revised biomass equations are provided in the accompanied manuscript:
+The `HubbardBrookForestAnalytics` package (HBFA) facilitates easy access and consistent application of the revised Hubbard Brook Experimental Forest tree biomass equations. The associated Shiny app is available [here](https://kearutherford.shinyapps.io/HBFAShinyApp/). Further details on the revised biomass equations are provided in the accompanied manuscript:
 
 Rutherford, K.H., J.J. Battles, and N.L. Cleavitt. 2026. Quantifying tree biomass: Insights from a long-term study at Hubbard Brook Experimental Forest. Canadian Journal of Forest Research.
 
