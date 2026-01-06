@@ -1,10 +1,25 @@
 
+- [Hubbard Brook Forest Analytics](#hubbard-brook-forest-analytics)
+  - [Installation instructions](#installation-instructions)
+  - [Citation instructions](#citation-instructions)
+- [Tree biomass estimates:
+  `HBEFBiomass( )`](#tree-biomass-estimates-hbefbiomass-)
+- [Background information for tree biomass
+  estimations](#background-information-for-tree-biomass-estimations)
+  - [Biomass workflow](#biomass-workflow)
+  - [Species code tables](#species-code-tables)
+  - [Vigor code table](#vigor-code-table)
+
 # Hubbard Brook Forest Analytics
 
-`HubbardBrookForestAnalytics` (HBFA) package overview coming soon …
+The `HubbardBrookForestAnalytics` package (HBFA) facilitates easy access
+and consistent application of the revised Hubbard Brook Experimental
+Forest tree biomass equations. Details on the revised biomass equations
+are provided in the accompanied manuscript:
 
-> :bulb: **Tip:** you can navigate this README file using the table of
-> contents found in the upper right-hand corner.
+Rutherford, K.H., J.J. Battles, and N.L. Cleavitt. 2026. Quantifying
+tree biomass: Insights from a long-term study at Hubbard Brook
+Experimental Forest. Canadian Journal of Forest Research.
 
 ## Installation instructions
 
@@ -45,38 +60,7 @@ citation("HubbardBrookForestAnalytics")
     ##     url = {https://github.com/kearutherford/HubbardBrookForestAnalytics},
     ##   }
 
-## Copyright notice
-
-UC Berkeley’s Standard Copyright and Disclaimer Notice:
-
-Copyright ©2024. The Regents of the University of California (Regents).
-All Rights Reserved. Permission to use, copy, modify, and distribute
-this software and its documentation for educational, research, and
-not-for-profit purposes, without fee and without a signed licensing
-agreement, is hereby granted, provided that the above copyright notice,
-this paragraph and the following two paragraphs appear in all copies,
-modifications, and distributions.
-
-IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
-SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,
-ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
-REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
-PROVIDED HEREUNDER IS PROVIDED “AS IS”. REGENTS HAS NO OBLIGATION TO
-PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-
-First published: July 1, 2024
-
-# Tree biomass estimates
-
-The `HBEFBiomass` function uses localized equations to estimate
-aboveground tree biomass. See “Background information for tree biomass
-estimations” below for further details.
-
-## :eight_spoked_asterisk: `HBEFBiomass( )`
+# Tree biomass estimates: `HBEFBiomass( )`
 
 ### Inputs
 
@@ -336,7 +320,8 @@ valley-wide height samples.
 
 We fit new equations to predict total aboveground tree biomass
 (including all wood, bark, branch, and foliage). We fit separate
-equations to predict tree foliage biomass on its own.
+equations to predict tree foliage biomass on its own. See Rutherford et
+al. 2026 for details on the development of the biomass equations.
 
 <br>
 
