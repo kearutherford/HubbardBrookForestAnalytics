@@ -1,8 +1,6 @@
 ---
 output: 
-  github_document:
-    toc: true
-    toc_depth: 2
+  github_document
 ---
 
 # Hubbard Brook Forest Analytics 
@@ -10,6 +8,8 @@ output:
 The `HubbardBrookForestAnalytics` package (HBFA) facilitates easy access and consistent application of the revised Hubbard Brook Experimental Forest tree biomass equations. Details on the revised biomass equations are provided in the accompanied manuscript:
 
 Rutherford, K.H., J.J. Battles, and N.L. Cleavitt. 2026. Quantifying tree biomass: Insights from a long-term study at Hubbard Brook Experimental Forest. Canadian Journal of Forest Research.
+
+> :bulb: **Tip:** you can navigate this README file using the table of contents found in the upper right-hand corner.
 
 ## Installation instructions
 

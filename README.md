@@ -1,15 +1,4 @@
 
-- [Hubbard Brook Forest Analytics](#hubbard-brook-forest-analytics)
-  - [Installation instructions](#installation-instructions)
-  - [Citation instructions](#citation-instructions)
-- [Tree biomass estimates:
-  `HBEFBiomass( )`](#tree-biomass-estimates-hbefbiomass-)
-- [Background information for tree biomass
-  estimations](#background-information-for-tree-biomass-estimations)
-  - [Biomass workflow](#biomass-workflow)
-  - [Species code tables](#species-code-tables)
-  - [Vigor code table](#vigor-code-table)
-
 # Hubbard Brook Forest Analytics
 
 The `HubbardBrookForestAnalytics` package (HBFA) facilitates easy access
@@ -20,6 +9,9 @@ are provided in the accompanied manuscript:
 Rutherford, K.H., J.J. Battles, and N.L. Cleavitt. 2026. Quantifying
 tree biomass: Insights from a long-term study at Hubbard Brook
 Experimental Forest. Canadian Journal of Forest Research.
+
+> :bulb: **Tip:** you can navigate this README file using the table of
+> contents found in the upper right-hand corner.
 
 ## Installation instructions
 
