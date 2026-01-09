@@ -78,6 +78,11 @@ PredictBiomass <- function(data) {
   # species set 2 (we use NSVB equations)
   ##############################################################################
   
+  sp_nsvb <- data.frame(
+    species_og = c("PRSE","BEPO","AMSP","SOAM","ACSP","UNKN","SAPU","PRVI","COAL","TIAM","OSVI","SASP"),
+    species = c("762","379","356","935","319","999","6991","763","490","951","701","920")
+  )
+  
   if(nrow(sp_set_2.1 > 0)) {
   
     # preserve original columns 
@@ -86,29 +91,28 @@ PredictBiomass <- function(data) {
     names(sp_set_2.1)[names(sp_set_2.1) == "dbh_cm"] <- "dbh_og"
     
     # add columns necessary for running NVSB in BFA
-    sp_set_2.1$division <- "M210"
-    sp_set_2.1$province <- "M211"
-    sp_set_2.1$site <- paste(sp_set_2.1$watershed, sp_set_2.1$year, sp_set_2.1$sample_class, sep = "_")
-    sp_set_2.1$status <- "1" # all trees sent to BFA NSVB are live (decay/degrade later in this workflow)
-    sp_set_2.1$decay_class <- "0"
-    sp_set_2.1$species <- ifelse(sp_set_2.1$species_og == "UNKN", "UNTR", # UNKN = UNTR in BFA
-                                 ifelse(sp_set_2.1$species_og == "COAL", "COSP", sp_set_2.1$species_og)) # COAL routed to COSP in BFA
-    sp_set_2.1$dbh <- ifelse(sp_set_2.1$dbh_og < 2.54, 2.54, sp_set_2.1$dbh_og)
-    sp_set_2.1$ht1 <- sp_set_2.1$ht_cm*0.01 # convert ht from cm to m
-    sp_set_2.1$ht2 <- as.numeric(NA)
-    sp_set_2.1$crown_ratio <- as.numeric(NA)
-    sp_set_2.1$top <- "Y"
-    sp_set_2.1$cull <- 0
+    sp_set_2.2 <- merge(sp_set_2.1, sp_nsvb, by = "species_og") # add fia species
+    sp_set_2.2$division <- "M210"
+    sp_set_2.2$province <- "M211"
+    sp_set_2.2$site <- paste(sp_set_2.2$watershed, sp_set_2.2$year, sp_set_2.2$sample_class, sep = "_")
+    sp_set_2.2$status <- "1" # all trees sent to BFA NSVB are live (decay/degrade later in this workflow)
+    sp_set_2.2$decay_class <- "0"
+    sp_set_2.2$dbh <- ifelse(sp_set_2.2$dbh_og < 2.54, 2.54, sp_set_2.2$dbh_og)
+    sp_set_2.2$ht1 <- sp_set_2.2$ht_cm*0.01 # convert ht from cm to m
+    sp_set_2.2$ht2 <- as.numeric(NA)
+    sp_set_2.2$crown_ratio <- as.numeric(NA)
+    sp_set_2.2$top <- "Y"
+    sp_set_2.2$cull <- 0
     
     # run NSVB function from BFA 
-    sp_set_2.2 <- suppressWarnings(BiomassNSVB(data = sp_set_2.1, sp_codes = "4letter", input_units = "metric", output_units = "metric", results = "by_tree")$dataframe)
+    sp_set_2.3 <- suppressWarnings(BiomassNSVB(data = sp_set_2.2, input_units = "metric", output_units = "metric", results = "by_tree")$dataframe)
     
     # make sure HBEF and BFA NSVB values are cohesive
     # In HBEF data, ABOVEg includes LEAFg. In NSVB workflow, foliage is separate from wood/bark/branch biomass.
-    sp_set_2.2$above_kg <- sp_set_2.2$total_ag_kg + sp_set_2.2$foliage_kg
+    sp_set_2.3$above_kg <- sp_set_2.3$total_ag_kg + sp_set_2.3$foliage_kg
     
     # create clean output df
-    set_2_output <- subset(sp_set_2.2, select = -c(division, province, site, status, decay_class, species, species_fia, dbh_cm, ht1_m, ht2_m, crown_ratio, top, cull,
+    set_2_output <- subset(sp_set_2.3, select = -c(division, province, site, status, decay_class, species, species_fia, dbh_cm, ht1_m, ht2_m, crown_ratio, top, cull,
                                                    total_wood_kg, total_bark_kg, total_branch_kg, total_ag_kg, merch_wood_kg, merch_bark_kg, merch_total_kg,
                                                    merch_top_kg, stump_wood_kg, stump_bark_kg, stump_total_kg,
                                                    total_wood_c, total_bark_c, total_branch_c, total_ag_c, merch_wood_c, merch_bark_c, merch_total_c,
