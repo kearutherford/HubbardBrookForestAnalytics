@@ -112,7 +112,7 @@ PredictBiomass <- function(data) {
     sp_set_2.3$above_kg <- sp_set_2.3$total_ag_kg + sp_set_2.3$foliage_kg
     
     # create clean output df
-    set_2_output <- subset(sp_set_2.3, select = -c(division, province, site, status, decay_class, species, species_fia, dbh_cm, ht1_m, ht2_m, crown_ratio, top, cull,
+    set_2_output <- subset(sp_set_2.3, select = -c(division, province, site, status, decay_class, species, dbh_cm, ht1_m, ht2_m, crown_ratio, top, cull,
                                                    total_wood_kg, total_bark_kg, total_branch_kg, total_ag_kg, merch_wood_kg, merch_bark_kg, merch_total_kg,
                                                    merch_top_kg, stump_wood_kg, stump_bark_kg, stump_total_kg,
                                                    total_wood_c, total_bark_c, total_branch_c, total_ag_c, merch_wood_c, merch_bark_c, merch_total_c,
