@@ -188,7 +188,7 @@ head(internal_demo_1)
     ## 16022  spruce-fir       0.0075
     ## 26245  spruce-fir       0.0625
 
-*Notice in the output dataframe: The `bbd`, `canopy`, `aspect_deg`,
+*Notice in the output dataframe: The `aspect_deg`, `bbd`, `canopy`,
 `forest_type`, and `plot_area_ha` columns, which are additional (not
 required) columns in the internal dataframe, remain in the output
 dataframe. Any additional columns in the internal or external dataframe

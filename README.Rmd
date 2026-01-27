@@ -110,7 +110,7 @@ internal_demo_1 <- HBEFBiomass(data_type = "internal",
 head(internal_demo_1)
 ```
 
-*Notice in the output dataframe: The `bbd`, `canopy`, `aspect_deg`, `forest_type`, and `plot_area_ha` columns, which are additional (not required) columns in the internal dataframe, remain in the output dataframe. Any additional columns in the internal or external dataframe will remain in the output dataframe.*
+*Notice in the output dataframe: The `aspect_deg`, `bbd`, `canopy`, `forest_type`, and `plot_area_ha` columns, which are additional (not required) columns in the internal dataframe, remain in the output dataframe. Any additional columns in the internal or external dataframe will remain in the output dataframe.*
 
 <br>
 
