@@ -39,18 +39,18 @@ citation("HubbardBrookForestAnalytics")
 
     ## To cite package 'HubbardBrookForestAnalytics' in publications use:
     ## 
-    ##   Kea Rutherford, John Battles (2024). _HubbardBrookForestAnalytics,
-    ##   version 2.0.0_. Battles Lab: Forest Ecology and Ecosystem Dynamics,
+    ##   Kea Rutherford, John Battles (2026). _HubbardBrookForestAnalytics,
+    ##   version 2.1.0_. Battles Lab: Forest Ecology and Ecosystem Dynamics,
     ##   University of California, Berkeley.
     ##   <https://github.com/kearutherford/HubbardBrookForestAnalytics>.
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
     ##   @Manual{,
-    ##     title = {HubbardBrookForestAnalytics, version 2.0.0},
+    ##     title = {HubbardBrookForestAnalytics, version 2.1.0},
     ##     author = {{Kea Rutherford} and {John Battles}},
     ##     organization = {Battles Lab: Forest Ecology and Ecosystem Dynamics, University of California, Berkeley},
-    ##     year = {2024},
+    ##     year = {2026},
     ##     url = {https://github.com/kearutherford/HubbardBrookForestAnalytics},
     ##   }
 
@@ -166,29 +166,29 @@ internal_demo_1 <- HBEFBiomass(data_type = "internal",
 head(internal_demo_1)
 ```
 
-    ##       watershed year plot elev_m        hli steep_deg exp_factor species status
-    ## 4341         W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ABBA   Live
-    ## 7622         W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ABBA   Live
-    ## 14040        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACPE   Live
-    ## 16074        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACRU   Dead
-    ## 16119        W1 1996    1  738.2 -0.4165022  5.710593   133.3333    ACRU   Live
-    ## 36828        W1 1996    1  738.2 -0.4165022  5.710593    16.0000    ACSA   Live
-    ##       vigor dbh_cm     ht_cm    above_kg    leaf_kg  bbd canopy elev_band
-    ## 4341      0   15.1 1045.6302  51.5228324 8.50316916 <NA>   <NA>         H
-    ## 7622      0   15.2 1050.6358  52.4011600 8.62257122 <NA>   <NA>         H
-    ## 14040     0    2.1  375.9601   0.7164254 0.06835573 <NA>   <NA>         H
-    ## 16074     4    2.9  504.9463   1.3932184 0.00000000 <NA>   <NA>         H
-    ## 16119     3    2.7  481.7714   1.6182775 0.19173872 <NA>   <NA>         H
-    ## 36828     0   15.8 1534.4349 115.6670692 2.91970226 <NA>   <NA>         H
+    ##       watershed year plot elev_m  hli steep_deg exp_factor species status vigor
+    ## 2803         W1 1996    1    738 -0.4         6    16.0000    ABBA   Live     0
+    ## 2926         W1 1996    1    738 -0.4         6    16.0000    ABBA   Live     0
+    ## 12791        W1 1996    1    738 -0.4         6   133.3333    ACPE   Live     0
+    ## 16021        W1 1996    1    738 -0.4         6   133.3333    ACRU   Live     3
+    ## 16022        W1 1996    1    738 -0.4         6   133.3333    ACRU   Dead     4
+    ## 26245        W1 1996    1    738 -0.4         6    16.0000    ACSA   Live     0
+    ##       dbh_cm     ht_cm    above_kg    leaf_kg aspect_deg  bbd canopy
+    ## 2803    15.1 1044.9190  51.4953595 8.51238045         72 <NA>   <NA>
+    ## 2926    15.2 1049.9174  52.3730708 8.63196138         72 <NA>   <NA>
+    ## 12791    2.1  392.8860   0.7164254 0.06835573         72 <NA>   <NA>
+    ## 16021    2.7  480.9707   1.6182775 0.19218577         72 <NA>   <NA>
+    ## 16022    2.9  504.0964   1.3932184 0.00000000         72 <NA>   <NA>
+    ## 26245   15.8 1550.3583 115.6670692 2.89960204         72 <NA>   <NA>
     ##       forest_type plot_area_ha
-    ## 4341   spruce-fir       0.0625
-    ## 7622   spruce-fir       0.0625
-    ## 14040  spruce-fir       0.0075
-    ## 16074  spruce-fir       0.0075
-    ## 16119  spruce-fir       0.0075
-    ## 36828  spruce-fir       0.0625
+    ## 2803   spruce-fir       0.0625
+    ## 2926   spruce-fir       0.0625
+    ## 12791  spruce-fir       0.0075
+    ## 16021  spruce-fir       0.0075
+    ## 16022  spruce-fir       0.0075
+    ## 26245  spruce-fir       0.0625
 
-*Notice in the output dataframe: The `bbd`, `canopy`, `elev_band`,
+*Notice in the output dataframe: The `bbd`, `canopy`, `aspect_deg`,
 `forest_type`, and `plot_area_ha` columns, which are additional (not
 required) columns in the internal dataframe, remain in the output
 dataframe. Any additional columns in the internal or external dataframe
@@ -253,10 +253,10 @@ internal_demo_2
 ```
 
     ##   watershed year plot elev_m above_L_Mg_ha above_D_Mg_ha above_Mg_ha leaf_Mg_ha
-    ## 1        W5 1998    1    500       5.40888       0.00000     5.40888    0.11372
-    ## 2        W5 1998    2    650       0.25206       8.15022     8.40228    0.01574
-    ## 3        W5 2002    1    500       2.46437       2.14448     4.60885    0.07316
-    ## 4        W5 2002    2    650       0.00000       7.01139     7.01139    0.00000
+    ## 1        W5 1998    1    500       5.40517       0.00000     5.40517    0.11383
+    ## 2        W5 1998    2    650       0.25355       8.15022     8.40377    0.01568
+    ## 3        W5 2002    1    500       2.46437       2.14178     4.60615    0.07327
+    ## 4        W5 2002    2    650       0.00000       7.01248     7.01248    0.00000
     ## 5        W6 1997    1    750       0.00000       4.47166     4.47166    0.00000
     ## 6        W6 1997    2    550       0.00000       0.00000     0.00000    0.00000
 
@@ -276,19 +276,19 @@ head(internal_demo_3)
 ```
 
     ##   watershed year plot       forest_type elev_m sample_class above_L_Mg_ha
-    ## 1        W1 1996    1        spruce-fir  738.2      sapling       0.38201
-    ## 2        W1 1996    1        spruce-fir  738.2         tree     110.26162
-    ## 3        W1 1996   10 northern_hardwood  738.9      sapling      11.03994
-    ## 4        W1 1996   10 northern_hardwood  738.9         tree     154.74468
-    ## 5        W1 1996  100 northern_hardwood  622.7      sapling       5.72583
-    ## 6        W1 1996  100 northern_hardwood  622.7         tree     145.68833
+    ## 1        W1 1996    1        spruce-fir    738      sapling       0.38198
+    ## 2        W1 1996    1        spruce-fir    738         tree     110.24471
+    ## 3        W1 1996   10 northern_hardwood    739      sapling      11.03994
+    ## 4        W1 1996   10 northern_hardwood    739         tree     154.71871
+    ## 5        W1 1996  100 northern_hardwood    623      sapling       5.72583
+    ## 6        W1 1996  100 northern_hardwood    623         tree     145.68833
     ##   above_D_Mg_ha above_Mg_ha leaf_Mg_ha
-    ## 1       0.18576     0.56777    0.03616
-    ## 2      47.10919   157.37081    3.07775
-    ## 3       0.20946    11.24940    0.51896
-    ## 4       4.23677   158.98145    3.66743
-    ## 5       0.00000     5.72583    0.24460
-    ## 6      22.02775   167.71608    2.35344
+    ## 1       0.18576     0.56774    0.03622
+    ## 2      47.10919   157.35390    3.07339
+    ## 3       0.20946    11.24940    0.51219
+    ## 4       4.23677   158.95548    3.65454
+    ## 5       0.00000     5.72583    0.24735
+    ## 6      22.02741   167.71574    2.39334
 
 *Notice in the output dataframe: Since forest_type is included in the
 internal data, it is carried through into the summarized output data.

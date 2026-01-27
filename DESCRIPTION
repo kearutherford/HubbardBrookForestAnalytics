@@ -1,12 +1,12 @@
 Package: HubbardBrookForestAnalytics
-Title: What the Package Does
-Version: 2.0.0
+Title: Compute tree biomass for Hubbard Brook Experimental Forest
+Version: 2.1.0
 Authors@R: c(
     person("Kea", "Rutherford", , "krutherford@berkeley.edu", role = c("aut", "cre")),
     person("John", "Battles", role = "aut")
   )
-Description: What the package does in one paragraph.
-License: MIT + file LICENSE
+Description: Facilitates easy access and consistent application of the revised Hubbard Brook Experimental Forest tree biomass equations.
+License: file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
