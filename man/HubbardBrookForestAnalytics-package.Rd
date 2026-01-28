@@ -4,9 +4,9 @@
 \name{HubbardBrookForestAnalytics-package}
 \alias{HubbardBrookForestAnalytics}
 \alias{HubbardBrookForestAnalytics-package}
-\title{HubbardBrookForestAnalytics: What the Package Does}
+\title{HubbardBrookForestAnalytics: Compute tree biomass for Hubbard Brook Experimental Forest}
 \description{
-What the package does in one paragraph.
+Facilitates easy access and consistent application of the revised Hubbard Brook Experimental Forest tree biomass equations.
 }
 \seealso{
 Useful links:
